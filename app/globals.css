@@ -3,6 +3,8 @@
   --color-brand: #1d9e75;
   --color-brand-dark: #0f6e56;
   --color-brand-light: #e1f5ee;
+  --color-orange-light: #fef3c7;
+  --color-orange-dark: #92400e;
 
   --color-positive-bg: #e1f5ee;
   --color-positive-fg: #0f6e56;
@@ -15,6 +17,8 @@
   --color-bg: #f9fafb;
   --color-border: #e5e7eb;
   --color-border-light: #f3f4f6;
+  --color-danger: #ef4444;
+  --color-white: #fff;
 
   --color-text-primary: #111827;
   --color-text-secondary: #6b7280;
@@ -74,4 +78,3 @@ select,
 textarea {
   font-family: inherit;
 }
-

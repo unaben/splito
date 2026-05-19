@@ -1,10 +1,45 @@
 "use client";
 
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { registerAction } from "@/actions/auth";
 import styles from "./register.module.css";
 
 export default function RegisterPage() {
-  const isPending = false;
-  const error = null;
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+
+    startTransition(async () => {
+      const result = await registerAction(formData);
+
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+
+      const res = await signIn("credentials", {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setError("Registration succeeded but sign-in failed. Please log in.");
+        router.push("/login");
+        return;
+      }
+
+      router.push("/dashboard");
+    });
+  };
 
   return (
     <div className={styles.page}>
@@ -15,7 +50,7 @@ export default function RegisterPage() {
         <h1 className={styles.title}>Create your account</h1>
         <p className={styles.subtitle}>Set up Splito on this device</p>
 
-        <form onSubmit={() => {}} className={styles.form}>
+        <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label htmlFor="name" className={styles.label}>
               Full name

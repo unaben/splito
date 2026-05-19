@@ -102,3 +102,20 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.forgotLink {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 150ms;
+}
+
+.forgotLink:hover {
+  color: var(--color-brand);
+}
