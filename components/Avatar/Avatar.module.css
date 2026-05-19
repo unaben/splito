@@ -1,0 +1,62 @@
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+
+.sm {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+
+.md {
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+}
+
+.lg {
+  width: 44px;
+  height: 44px;
+  font-size: 15px;
+}
+
+
+.stack {
+  display: flex;
+  align-items: center;
+}
+
+.stackItem {
+  margin-left: -8px;
+  position: relative;
+}
+
+.stackItem:first-child {
+  margin-left: 0;
+}
+
+.stackAvatar {
+  outline: 2px solid var(--color-surface);
+}
+
+.overflow {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-bg);
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: 2px solid var(--color-surface);
+  margin-left: -8px;
+}
