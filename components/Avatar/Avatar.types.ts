@@ -2,7 +2,7 @@ import type { User } from '@/types'
 import type { Size } from '@/types'
 
 export interface AvatarProps {
-  user: User
+  user?: User
   size?: Size
   className?: string
 }

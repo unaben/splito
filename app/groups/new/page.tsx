@@ -1,9 +1,16 @@
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { CreateGroupForm } from "@/components/CreateGroupForm";
+import { getCurrentUserId } from "@/lib/mockAuth";
+import { getAllUsers } from "@/services/store";
 import styles from "./newGroup.module.css";
 
 export default async function NewGroupPage() {
+  const currentUserId = await getCurrentUserId();
+
+  const allUsers = await getAllUsers();
+  const otherUsers = allUsers.filter((user) => user.id !== currentUserId);
+
   return (
     <div className={styles.page}>
       <Navbar />
@@ -15,7 +22,7 @@ export default async function NewGroupPage() {
         <p className={styles.subheading}>
           Add friends and start splitting expenses
         </p>
-        <CreateGroupForm />
+        <CreateGroupForm users={otherUsers} />
       </main>
     </div>
   );

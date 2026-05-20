@@ -1,12 +1,50 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useTransition, useState } from "react";
+import cn from "classnames";
+import { Avatar } from "../Avatar";
+import { EMOJIS } from "./constants";
+import { handleSubmitCreateGroupForm, toggleMember } from "./utils";
+import type { CreateGroupFormProps } from "./CreateGroupForm.types";
 import styles from "./CreateGroupForm.module.css";
 
-export function CreateGroupForm() {
+
+export function CreateGroupForm({ users }: CreateGroupFormProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [selectedEmoji, setSelectedEmoji] = useState("✈️");
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+
   return (
-    <form className={styles.form}>
+    <form
+      onSubmit={(e) =>
+        handleSubmitCreateGroupForm(e, {
+          selectedEmoji,
+          selectedMembers,
+          setError,
+          startTransition,
+        })
+      }
+      className={styles.form}
+    >
       <div className={styles.field}>
         <label className={styles.label}>Group icon</label>
+        <div className={styles.emojiGrid}>
+          {EMOJIS.map((emoji) => (
+            <button
+              key={emoji}
+              type="button"
+              onClick={() => setSelectedEmoji(emoji)}
+              className={cn(styles.emojiBtn, {
+                [styles.emojiBtnActive]: selectedEmoji === emoji,
+              })}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
       </div>
       <div className={styles.field}>
         <label className={styles.label} htmlFor="name">
@@ -32,6 +70,67 @@ export function CreateGroupForm() {
           placeholder="What's this group for?"
           maxLength={200}
         />
+      </div>
+      <div className={styles.field}>
+        <label className={styles.label}>Add members</label>
+        <p className={styles.memberHint}>You&apos;ll be added automatically</p>
+        <div className={styles.memberList}>
+          {users.map((user) => {
+            const isSelected = selectedMembers.includes(user.id);
+            return (
+              <button
+                key={user.id}
+                type="button"
+                onClick={() => toggleMember(user.id, setSelectedMembers)}
+                className={cn(styles.memberBtn, {
+                  [styles.memberBtnActive]: isSelected,
+                })}
+              >
+                <Avatar user={user} size="sm" />
+                <div className={styles.memberInfo}>
+                  <p className={styles.memberName}>{user.name}</p>
+                  <p className={styles.memberEmail}>{user.email}</p>
+                </div>
+                <div
+                  className={cn(styles.checkCircle, {
+                    [styles.checkCircleActive]: isSelected,
+                  })}
+                >
+                  {isSelected && (
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path
+                        d="M1 4l3 3 5-6"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {error && <p className={styles.error}>{error}</p>}
+
+      <div className={styles.actions}>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className={styles.btnSecondary}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isPending}
+          className={styles.btnPrimary}
+        >
+          {isPending ? "Creating…" : "Create group"}
+        </button>
       </div>
     </form>
   );
