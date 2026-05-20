@@ -5,11 +5,11 @@
  *
  * Routing logic:
  *
- *   isSeeded: true  → everyone goes to /register (fresh device)
+ *   /api/*              → always pass through (never redirect to /login)
+ *   isSeeded: true      → everyone goes to /register (fresh device)
  *   isSeeded: false + no session → /login
  *   isSeeded: false + has session → through to the page
  *   /register, /login, /forgot-password → always accessible
- *   (authenticated users visiting these are redirected to /dashboard)
  * ─────────────────────────────────────────────────────────────
  */
 
@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (
-    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon")
   ) {
