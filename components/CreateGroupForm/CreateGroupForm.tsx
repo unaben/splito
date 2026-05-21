@@ -1,34 +1,27 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useTransition, useState } from "react";
 import cn from "classnames";
 import { Avatar } from "../Avatar";
 import { EMOJIS } from "./constants";
-import { handleSubmitCreateGroupForm, toggleMember } from "./utils";
+import { toggleMember } from "./utils";
+import useHandleSubmitCreateGroupForm from "./hooks/useHandleSubmitCreateGroupForm";
 import type { CreateGroupFormProps } from "./CreateGroupForm.types";
 import styles from "./CreateGroupForm.module.css";
 
-
 export function CreateGroupForm({ users }: CreateGroupFormProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-  const [selectedEmoji, setSelectedEmoji] = useState("✈️");
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const {
+    router,
+    isPending,
+    error,
+    setSelectedEmoji,
+    setSelectedMembers,
+    handleSubmitCreateGroupForm,
+    selectedEmoji,
+    selectedMembers
+  } = useHandleSubmitCreateGroupForm();
 
   return (
-    <form
-      onSubmit={(e) =>
-        handleSubmitCreateGroupForm(e, {
-          selectedEmoji,
-          selectedMembers,
-          setError,
-          startTransition,
-        })
-      }
-      className={styles.form}
-    >
+    <form onSubmit={handleSubmitCreateGroupForm} className={styles.form}>
       <div className={styles.field}>
         <label className={styles.label}>Group icon</label>
         <div className={styles.emojiGrid}>

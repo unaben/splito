@@ -1,20 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import StepSuccess from "./components/StepSuccess";
 import StepResetDone from "./components/StepResetDone";
 import StepEmail from "./components/StepEmail";
 import StepPassword from "./components/StepPassword";
 import StepReset from "./components/StepReset";
-import type { Step } from "./ForgotPassword.types";
+import useHandleSubmit from "./components/hooks/useHandleSubmit";
 import styles from "./ForgotPassword.module.css";
 
 const ForgotPassword = () => {
-  const [step, setStep] = useState<Step>("email");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [resetDone, setResetDone] = useState(false);  
+  const {
+    handleEmailSubmit,
+    handlePasswordSubmit,
+    handleResetSubmit,
+    resetDone,
+    success,
+    error,
+    setError,
+    email,
+    step,
+    setStep,
+  } = useHandleSubmit();
 
   if (success) {
     return <StepSuccess />;
@@ -32,17 +38,17 @@ const ForgotPassword = () => {
         </div>
 
         {step === "email" && (
-          <StepEmail {...{ error, setEmail, setError, setStep }} />
+          <StepEmail {...{ error, handleEmailSubmit, setError, setStep }} />
         )}
 
         {step === "password" && (
           <StepPassword
-            {...{ email, error, setEmail, setError, setStep, setSuccess }}
+            {...{ email, error, handlePasswordSubmit, setError, setStep }}
           />
         )}
 
         {step === "reset" && (
-          <StepReset {...{ error, setError, setResetDone, setStep }} />
+          <StepReset {...{ error, setError, handleResetSubmit, setStep }} />
         )}
 
         {step !== "reset" && (

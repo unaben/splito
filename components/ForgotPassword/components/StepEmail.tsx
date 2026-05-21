@@ -1,20 +1,19 @@
-'use client'
+"use client";
 
 import { Dispatch, SetStateAction } from "react";
 import { goToStep } from "../helper/goToStep";
-import { handleEmailSubmit } from "../utils/handleEmailSubmit";
 import type { Step } from "../ForgotPassword.types";
 import styles from "../ForgotPassword.module.css";
 
 type StepEmailProps = {
   setError: Dispatch<SetStateAction<string | null>>;
   setStep: Dispatch<SetStateAction<Step>>;
-  setEmail: Dispatch<SetStateAction<string>>;
   error: string | null;
+  handleEmailSubmit: (e: React.SyntheticEvent<HTMLFormElement>) => void;
 };
 
 const StepEmail = (props: StepEmailProps) => {
-  const { error, setEmail, setError, setStep } = props;
+  const { error, setError, setStep, handleEmailSubmit } = props;
 
   return (
     <>
@@ -23,10 +22,7 @@ const StepEmail = (props: StepEmailProps) => {
         Enter the email address registered on this device.
       </p>
 
-      <form
-        onSubmit={(e) => handleEmailSubmit(e, { setEmail, setError, setStep })}
-        className={styles.form}
-      >
+      <form onSubmit={handleEmailSubmit} className={styles.form}>
         <div className={styles.field}>
           <label htmlFor="email" className={styles.label}>
             Email

@@ -1,23 +1,29 @@
 "use client";
 
-import { Dispatch, SetStateAction, useTransition } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  TransitionStartFunction,
+  useTransition,
+} from "react";
 import { goToStep } from "../helper/goToStep";
-import { handlePasswordSubmit } from "../utils/handlePasswordSubmit";
 import type { Step } from "../ForgotPassword.types";
 import styles from "../ForgotPassword.module.css";
 
 type StepPasswordProps = {
   email: string;
   error: string | null;
-  setEmail: Dispatch<SetStateAction<string>>;
   setError: Dispatch<SetStateAction<string | null>>;
   setStep: Dispatch<SetStateAction<Step>>;
-  setSuccess: Dispatch<SetStateAction<boolean>>;
+  handlePasswordSubmit: (
+    e: React.SyntheticEvent<HTMLFormElement>,
+    startTransition: TransitionStartFunction
+  ) => void;
 };
 
 const StepPassword = (props: StepPasswordProps) => {
   const [isPending, startTransition] = useTransition();
-  const { email, error, setEmail, setError, setStep, setSuccess } = props;
+  const { email, error, setError, setStep, handlePasswordSubmit } = props;
   return (
     <>
       <h1 className={styles.title}>Set new password</h1>
@@ -27,16 +33,7 @@ const StepPassword = (props: StepPasswordProps) => {
       </p>
 
       <form
-        onSubmit={(e) =>
-          handlePasswordSubmit(e, {
-            email,
-            setEmail,
-            setError,
-            setStep,
-            setSuccess,
-            startTransition,
-          })
-        }
+        onSubmit={(e) => handlePasswordSubmit(e, startTransition)}
         className={styles.form}
       >
         <div className={styles.field}>

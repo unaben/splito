@@ -1,33 +1,24 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import type { EditMemberFormProps } from "./EditMemberForm.types";
 import { AVATAR_COLORS } from "./constants";
-import { handleSubmitEditMemberForm } from "./utils/handleSubmit";
+import useHandleSubmitEditMemberForm from "./hooks/useHandleSubmitEditMemberForm";
 import styles from "./EditMemberForm.module.css";
 
 function EditMemberForm(props: EditMemberFormProps) {
-  const { user, onCancel, onSaved } = props;
+  const { user, onCancel } = props;
 
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-  const [avatarBg, setAvatarBg] = useState(user.avatarBg);
-  const [avatarFg, setAvatarFg] = useState(user.avatarFg);
+  const {
+    handleSubmitEditMemberForm,
+    isPending,
+    error,
+    setAvatarBg,
+    setAvatarFg,
+    avatarBg,
+  } = useHandleSubmitEditMemberForm(props);
 
   return (
-    <form
-      onSubmit={(e) =>
-        handleSubmitEditMemberForm(e, {
-          avatarBg,
-          avatarFg,
-          onSaved,
-          setError,
-          startTransition,
-          user,
-        })
-      }
-      className={styles.form}
-    >
+    <form onSubmit={handleSubmitEditMemberForm} className={styles.form}>
       <div className={styles.field}>
         <label htmlFor={`name-${user.id}`} className={styles.label}>
           Name

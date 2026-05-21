@@ -1,21 +1,27 @@
-import { Dispatch, SetStateAction, useTransition } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  TransitionStartFunction,
+  useTransition,
+} from "react";
 import { goToStep } from "../helper/goToStep";
 import { RESET_CONFIRMATION_WORD } from "@/actions/constants";
-import { handleResetSubmit } from "../utils/handleResetSubmit";
 import type { Step } from "../ForgotPassword.types";
 import styles from "../ForgotPassword.module.css";
-
 
 type StepResetProps = {
   error: string | null;
   setError: Dispatch<SetStateAction<string | null>>;
   setStep: Dispatch<SetStateAction<Step>>;
-  setResetDone: Dispatch<SetStateAction<boolean>>;
+  handleResetSubmit: (
+    e: React.SyntheticEvent<HTMLFormElement>,
+    startTransition: TransitionStartFunction
+  ) => void;
 };
 
 const StepReset = (props: StepResetProps) => {
   const [isPending, startTransition] = useTransition();
-  const { error, setError, setResetDone, setStep } = props;
+  const { error, setError, setStep, handleResetSubmit } = props;
   return (
     <>
       <h1 className={styles.title}>Reset the app</h1>
@@ -30,9 +36,7 @@ const StepReset = (props: StepResetProps) => {
       </div>
 
       <form
-        onSubmit={(e) =>
-          handleResetSubmit(e, { setError, setResetDone, startTransition })
-        }
+        onSubmit={(e) => handleResetSubmit(e, startTransition)}
         className={styles.form}
       >
         <div className={styles.field}>
