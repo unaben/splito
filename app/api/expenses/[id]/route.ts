@@ -8,13 +8,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { readDb, writeDb } from "@/lib/db";
-import type { Expense } from "@/types";
-
-type Params = { params: { id: string } };
+import type { Expense, Params } from "@/types";
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const db = await readDb();
-  const expense = db.expenses.find((e) => e.id === params.id);
+  const { id } = await params;
+  const expense = db.expenses.find((e) => e.id === id);
 
   if (!expense) {
     return NextResponse.json({ error: "Expense not found" }, { status: 404 });
@@ -25,7 +24,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const db = await readDb();
-  const idx = db.expenses.findIndex((e) => e.id === params.id);
+  const { id } = await params;
+  const idx = db.expenses.findIndex((e) => e.id === id);
 
   if (idx === -1) {
     return NextResponse.json({ error: "Expense not found" }, { status: 404 });
@@ -46,7 +46,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const db = await readDb();
-  const idx = db.expenses.findIndex((e) => e.id === params.id);
+  const { id } = await params;
+  const idx = db.expenses.findIndex((e) => e.id === id);
 
   if (idx === -1) {
     return NextResponse.json({ error: "Expense not found" }, { status: 404 });

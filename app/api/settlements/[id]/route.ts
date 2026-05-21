@@ -8,13 +8,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { readDb, writeDb, now } from "@/lib/db";
-import type { Settlement } from "@/types";
+import type { Params, Settlement } from "@/types";
 
-type Params = { params: { id: string } };
+
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const db = await readDb();
-  const settlement = db.settlements.find((s) => s.id === params.id);
+  const { id } = await params;
+  const settlement = db.settlements.find((s) => s.id === id);
 
   if (!settlement) {
     return NextResponse.json(
@@ -28,7 +29,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const db = await readDb();
-  const idx = db.settlements.findIndex((s) => s.id === params.id);
+  const { id } = await params;
+  const idx = db.settlements.findIndex((s) => s.id === id);
 
   if (idx === -1) {
     return NextResponse.json(
@@ -56,7 +58,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const db = await readDb();
-  const idx = db.settlements.findIndex((s) => s.id === params.id);
+  const { id } = await params;
+  const idx = db.settlements.findIndex((s) => s.id === id);
 
   if (idx === -1) {
     return NextResponse.json(
