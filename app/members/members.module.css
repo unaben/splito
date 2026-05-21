@@ -3,6 +3,16 @@
   background: var(--color-bg);
 }
 
+.backLink {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  transition: color 0.15s;
+}
+
+.backLink:hover {
+  color: var(--color-text-secondary);
+}
+
 .main {
   max-width: 640px;
   margin: 0 auto;

@@ -3,6 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { getCurrentUserId } from "@/lib/mockAuth";
 import { getAllUsers } from "@/services/store";
 import styles from "./members.module.css";
+import Link from "next/link";
 
 export default async function MembersPage() {
   const [allUsers, currentUserId] = await Promise.all([
@@ -10,7 +11,7 @@ export default async function MembersPage() {
     getCurrentUserId(),
   ]);
 
-  const sorted = [
+  const sortedMembers = [
     ...allUsers.filter((u) => u.id === currentUserId),
     ...allUsers.filter((u) => u.id !== currentUserId),
   ];
@@ -19,6 +20,9 @@ export default async function MembersPage() {
     <div className={styles.page}>
       <Navbar />
       <main className={styles.main}>
+        <Link href="/dashboard" className={styles.backLink}>
+          ← Back to dashboard
+        </Link>
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Group members</h1>
@@ -29,7 +33,7 @@ export default async function MembersPage() {
           </div>
         </div>
 
-        <MemberList members={sorted} currentUserId={currentUserId} />
+        <MemberList members={sortedMembers} currentUserId={currentUserId} />
       </main>
     </div>
   );
