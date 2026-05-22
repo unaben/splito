@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { penceFromPounds } from "@/utils/balance";
-import { getGroup, createExpense, deleteExpense, uid, now } from "@/lib/db";
+import { getGroup, createExpense, deleteExpense } from "@/lib/db";
+import { uid, now } from "@/helper";
 import type { Expense } from "@/types";
 
 const AddExpenseSchema = z.object({
