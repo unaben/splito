@@ -6,24 +6,16 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { readDb, writeDb, uid, now } from "@/lib/db";
+import { getSettlements, createSettlement, uid, now } from "@/lib/db";
 import type { Settlement } from "@/types";
 
 export async function GET(req: NextRequest) {
-  const db = await readDb();
-  const groupId = req.nextUrl.searchParams.get("groupId");
+  const { searchParams } = new URL(req.url);
+  const groupId = searchParams.get("groupId");
+  if (!groupId)
+    return NextResponse.json({ error: "groupId is required" }, { status: 400 });
 
-  if (!groupId) {
-    return NextResponse.json(
-      { error: "groupId query param is required" },
-      { status: 400 }
-    );
-  }
-
-  const settlements = db.settlements
-    .filter((s) => s.groupId === groupId)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-
+  const settlements = await getSettlements(groupId);
   return NextResponse.json(settlements);
 }
 
@@ -41,23 +33,13 @@ export async function POST(req: NextRequest) {
 
   if (!groupId || !payerId || !payeeId || amountPence == null || !status) {
     return NextResponse.json(
-      {
-        error:
-          "groupId, payerId, payeeId, amountPence, and status are required",
-      },
+      { error: "All fields are required" },
       { status: 400 }
     );
   }
 
-  const db = await readDb();
-
-  // Validate group exists
-  const group = db.groups.find((g) => g.id === groupId);
-  if (!group) {
-    return NextResponse.json({ error: "Group not found" }, { status: 404 });
-  }
-
-  const settlement: Settlement = {
+  const createdAt = now();
+  const settlement = await createSettlement({
     id: `settle-${uid()}`,
     groupId,
     payerId,
@@ -65,12 +47,9 @@ export async function POST(req: NextRequest) {
     amountPence,
     status,
     mockPaymentId,
-    createdAt: now(),
-    settledAt: status === "completed" ? now() : undefined,
-  };
-
-  db.settlements.push(settlement);
-  await writeDb(db);
+    createdAt,
+    settledAt: status === "completed" ? createdAt : undefined,
+  });
 
   return NextResponse.json(settlement, { status: 201 });
 }

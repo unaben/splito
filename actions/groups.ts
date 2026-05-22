@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createGroup, updateGroup, deleteGroup } from "../services/store";
 import { getCurrentUserId } from "@/lib/mockAuth";
+import { createGroup, updateGroup, deleteGroup, uid, now } from "@/lib/db";
 
 const CreateGroupSchema = z.object({
   name: z.string().min(1, "Name is required").max(50),
@@ -29,9 +29,11 @@ export async function createGroupAction(formData: FormData) {
   }
 
   const group = await createGroup({
+    id: `settle-${uid()}`,
     ...parsed.data,
     createdBy: userId,
     memberIds: Array.from(new Set([userId, ...parsed.data.memberIds])),
+    createdAt: now(),
   });
 
   revalidatePath("/dashboard");

@@ -7,18 +7,21 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { readDb, writeDb, uid, now } from "@/lib/db";
+import { uid, now, getGroups, createGroup } from "@/lib/db";
 import { LIMITS } from "@/types";
-import type { Group } from "@/types";
 
 export async function GET(req: NextRequest) {
-  const db = await readDb();
-  const userId = req.nextUrl.searchParams.get("userId");
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId")
+  
+  console.log({userId}); 
 
-  const groups = userId
-    ? db.groups.filter((group) => group.memberIds.includes(userId))
-    : db.groups;
+  if (!userId)
+    return NextResponse.json({ error: "userId is required" }, { status: 400 });
 
+  const groups = await getGroups(userId);
+  console.log({groups});
+  
   return NextResponse.json(groups);
 }
 
@@ -39,35 +42,30 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const db = await readDb();
-
-  const userGroupCount = db.groups.filter((g) =>
-    g.memberIds.includes(createdBy)
-  ).length;
-
-  if (userGroupCount >= LIMITS.MAX_GROUPS_PER_USER) {
-    return NextResponse.json(
-      {
-        error: `You can be in a maximum of ${LIMITS.MAX_GROUPS_PER_USER} groups.`,
-      },
-      { status: 422 }
-    );
-  }
-
   const allMembers = memberIds.includes(createdBy)
     ? memberIds
     : [createdBy, ...memberIds];
 
+  // Limit: max groups per user
+  const userGroups = await getGroups(createdBy);
+  if (userGroups.length >= LIMITS.MAX_GROUPS_PER_USER) {
+    return NextResponse.json(
+      { error: `Maximum of ${LIMITS.MAX_GROUPS_PER_USER} groups allowed.` },
+      { status: 422 }
+    );
+  }
+
+  // Limit: max members per group
   if (allMembers.length > LIMITS.MAX_MEMBERS_PER_GROUP) {
     return NextResponse.json(
       {
-        error: `A group can have a maximum of ${LIMITS.MAX_MEMBERS_PER_GROUP} members.`,
+        error: `Maximum of ${LIMITS.MAX_MEMBERS_PER_GROUP} members per group.`,
       },
       { status: 422 }
     );
   }
 
-  const group: Group = {
+  const group = await createGroup({
     id: `group-${uid()}`,
     name,
     description,
@@ -75,10 +73,7 @@ export async function POST(req: NextRequest) {
     createdBy,
     memberIds: allMembers,
     createdAt: now(),
-  };
-
-  db.groups.push(group);
-  await writeDb(db);
+  });
 
   return NextResponse.json(group, { status: 201 });
 }

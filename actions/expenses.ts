@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createExpense, deleteExpense, getGroup } from "../services/store";
 import { penceFromPounds } from "@/utils/balance";
+import { getGroup, createExpense, deleteExpense, uid, now } from "@/lib/db";
 import type { Expense } from "@/types";
 
 const AddExpenseSchema = z.object({
@@ -58,6 +58,7 @@ export async function addExpenseAction(formData: FormData) {
   });
 
   await createExpense({
+    id: `settle-${uid()}`,
     groupId: parsed.data.groupId,
     paidBy: parsed.data.paidBy,
     description: parsed.data.description,
@@ -65,6 +66,7 @@ export async function addExpenseAction(formData: FormData) {
     splitType: parsed.data.splitType,
     category: parsed.data.category,
     splits,
+    createdAt: now(),
   });
 
   revalidatePath(`/groups/${parsed.data.groupId}`);

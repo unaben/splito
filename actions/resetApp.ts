@@ -1,7 +1,8 @@
 "use server";
 
-import { writeDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { RESET_CONFIRMATION_WORD } from "./constants";
+import { insertSeedData } from "@/lib";
 
 export async function resetAppAction(formData: FormData) {
   const confirmation = ((formData.get("confirmation") as string) ?? "").trim();
@@ -12,58 +13,28 @@ export async function resetAppAction(formData: FormData) {
     };
   }
 
-  await writeDb({
-    users: [
-      {
-        id: "user-1",
-        email: "user1@example.com",
-        name: "User One",
-        avatarInitials: "U1",
-        avatarBg: "#CCFCE7",
-        avatarFg: "#065F46",
-        isSeeded: true,
-      },
-      {
-        id: "user-2",
-        email: "sarah@example.com",
-        name: "Sarah Adeyemi",
-        avatarInitials: "SA",
-        avatarBg: "#EDE9FE",
-        avatarFg: "#5B21B6",
-        isSeeded: true,
-      },
-      {
-        id: "user-3",
-        email: "marcus@example.com",
-        name: "Marcus King",
-        avatarInitials: "MK",
-        avatarBg: "#FEF3C7",
-        avatarFg: "#92400E",
-        isSeeded: true,
-      },
-      {
-        id: "user-4",
-        email: "james@example.com",
-        name: "James Thornton",
-        avatarInitials: "JT",
-        avatarBg: "#FFE4E6",
-        avatarFg: "#9F1239",
-        isSeeded: true,
-      },
-      {
-        id: "user-5",
-        email: "rosa@example.com",
-        name: "Rosa Lima",
-        avatarInitials: "RL",
-        avatarBg: "#FCE7F3",
-        avatarFg: "#9D174D",
-        isSeeded: true,
-      },
-    ],
-    groups: [],
-    expenses: [],
-    settlements: [],
-  });
+  // Delete all user data in dependency order
+  // (cascade handles most of it but settlements reference users directly)
+  await supabase.from("settlements").delete().neq("id", "");
+  await supabase.from("expense_splits").delete().neq("expense_id", "");
+  await supabase.from("expenses").delete().neq("id", "");
+  await supabase.from("group_members").delete().neq("group_id", "");
+  await supabase.from("groups").delete().neq("id", "");
+
+  // Reset user-1 back to seed state — keep mock members as-is
+  await supabase
+    .from("users")
+    .update({
+      name: "User One",
+      email: "user1@example.com",
+      avatar_initials: "U1",
+      is_seeded: true,
+      password_hash: null,
+    })
+    .eq("id", "user-1");
+
+   // Re-populate with fresh seed data
+  await insertSeedData()
 
   return { success: true };
 }

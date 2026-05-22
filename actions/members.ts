@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { updateUser, getAllUsers } from "@/services/store";
+import { updateUser, getAllUsers } from "@/lib/db";
 import { getCurrentUserId } from "@/lib/mockAuth";
 
 const UpdateMemberSchema = z.object({

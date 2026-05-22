@@ -2,9 +2,8 @@
 
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { readDb, writeDb } from "@/lib/db";
-import { titleCase } from "@/utils/titleCase";
-import { findUserOne } from "@/utils";
+import { getUser, updateUser } from "@/lib/db";
+import { groupsTableIsEmpty, insertSeedData } from "@/lib";
 
 const RegisterSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50),
@@ -14,21 +13,18 @@ const RegisterSchema = z.object({
 
 export async function registerAction(formData: FormData) {
   const raw = {
-    name: formData.get("name") ?? '',
+    name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
   };
 
   const parsed = RegisterSchema.safeParse(raw);
-
   if (!parsed.success) {
     return { error: parsed.error.errors[0].message };
   }
 
-  const db = await readDb();
-  const userOne = findUserOne(db);
+  const userOne = await getUser("user-1");
 
- 
   if (!userOne) {
     return { error: "Setup error: base user not found." };
   }
@@ -48,17 +44,17 @@ export async function registerAction(formData: FormData) {
     .slice(0, 2)
     .toUpperCase();
 
-  const idx = db.users.findIndex((u) => u.id === "user-1");
-  db.users[idx] = {
-    ...db.users[idx],
-    name: titleCase(parsed.data.name),
-    email: parsed.data.email,
+  await updateUser("user-1", {
+    name: parsed.data.name,
+    email: parsed.data.email.toLowerCase(),
     avatarInitials: initials,
     passwordHash,
-    isSeeded: false, 
-  };
-
-  await writeDb(db);
+    isSeeded: false,
+  });
+  
+  if (await groupsTableIsEmpty()) {
+    await insertSeedData();
+  }
 
   return { success: true };
 }

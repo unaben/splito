@@ -2,8 +2,7 @@
 
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { readDb, writeDb } from "@/lib/db";
-import { findUserOne } from "@/utils";
+import { getUser, updateUser } from "@/lib/db";
 
 const ResetPasswordSchema = z
   .object({
@@ -29,8 +28,7 @@ export async function resetPasswordAction(formData: FormData) {
     return { error: parsed.error.errors[0].message };
   }
 
-  const db = await readDb();
-  const userOne = findUserOne(db);
+  const userOne = await getUser("user-1");
 
   if (!userOne || userOne.isSeeded) {
     return { error: "No account found. Please register first." };
@@ -42,10 +40,7 @@ export async function resetPasswordAction(formData: FormData) {
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
 
-  const idx = db.users.findIndex((u) => u.id === "user-1");
-  db.users[idx] = { ...db.users[idx], passwordHash };
-
-  await writeDb(db);
+  await updateUser("user-1", { passwordHash });
 
   return { success: true };
 }

@@ -7,12 +7,10 @@
  *
  */
 
+import { getSeedStatus } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { readDb } from "@/lib/db";
-import { findUserOne } from "@/utils";
 
 export async function GET() {
-  const db = await readDb();
-  const userOne = findUserOne(db);
-  return NextResponse.json({ isSeeded: userOne?.isSeeded ?? true });
+  const isSeeded = await getSeedStatus();
+  return NextResponse.json({ isSeeded });
 }

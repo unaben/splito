@@ -7,27 +7,28 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { readDb, writeDb, uid } from "@/lib/db";
+import { createUser, getAllUsers, getUsersByIds, uid } from "@/lib/db";
 import type { User } from "@/types";
 
 export async function GET(req: NextRequest) {
-  const db = await readDb();
-  const idsParam = req.nextUrl.searchParams.get("ids");
+  const { searchParams } = new URL(req.url);
+  const idsParam = searchParams.get("ids");
 
   if (idsParam) {
     const ids = idsParam.split(",").map((s) => s.trim());
-    const filtered = db.users.filter((u) => ids.includes(u.id));
-    return NextResponse.json(filtered);
+    const users = await getUsersByIds(ids);
+    return NextResponse.json(users);
   }
 
-  return NextResponse.json(db.users);
+  const users = await getAllUsers();
+  return NextResponse.json(users);
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { email, name, avatarInitials, avatarBg, avatarFg } = body as Omit<
     User,
-    "id"
+    "id" | "isSeeded"
   >;
 
   if (!email || !name) {
@@ -37,28 +38,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const db = await readDb();
-
-  const duplicate = db.users.find((u) => u.email === email);
-  if (duplicate) {
-    return NextResponse.json(
-      { error: "A user with this email already exists" },
-      { status: 409 }
-    );
-  }
-
-  const user: User = {
+  const user = await createUser({
     id: `user-${uid()}`,
     email,
     name,
     avatarInitials: avatarInitials ?? name.slice(0, 2).toUpperCase(),
     avatarBg: avatarBg ?? "#E5E7EB",
     avatarFg: avatarFg ?? "#111827",
-    isSeeded: false,
-  };
-
-  db.users.push(user);
-  await writeDb(db);
+    isSeeded: true,
+  });
 
   return NextResponse.json(user, { status: 201 });
 }

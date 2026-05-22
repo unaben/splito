@@ -5,36 +5,18 @@
  * POST /api/expenses                  → create a new expense
  */
 
-type Body = {
-  groupId: string;
-  paidBy: string;
-  description: string;
-  amountPence: number;
-  splitType: Expense["splitType"];
-  category: Expense["category"];
-  splits: Expense["splits"];
-};
-
 import { NextRequest, NextResponse } from "next/server";
-import { readDb, writeDb, uid, now } from "@/lib/db";
+import { getExpenses, getGroup, createExpense, uid, now } from "@/lib/db";
 import { LIMITS } from "@/types";
 import type { Expense } from "@/types";
 
 export async function GET(req: NextRequest) {
-  const db = await readDb();
-  const groupId = req.nextUrl.searchParams.get("groupId");
+  const { searchParams } = new URL(req.url);
+  const groupId = searchParams.get("groupId");
+  if (!groupId)
+    return NextResponse.json({ error: "groupId is required" }, { status: 400 });
 
-  if (!groupId) {
-    return NextResponse.json(
-      { error: "groupId query param is required" },
-      { status: 400 }
-    );
-  }
-
-  const expenses = db.expenses
-    .filter((e) => e.groupId === groupId)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-
+  const expenses = await getExpenses(groupId);
   return NextResponse.json(expenses);
 }
 
@@ -48,7 +30,15 @@ export async function POST(req: NextRequest) {
     splitType,
     category,
     splits,
-  } = body as Body;
+  } = body as {
+    groupId: string;
+    paidBy: string;
+    description: string;
+    amountPence: number;
+    splitType: Expense["splitType"];
+    category: Expense["category"];
+    splits: Expense["splits"];
+  };
 
   if (
     !groupId ||
@@ -60,37 +50,27 @@ export async function POST(req: NextRequest) {
     !Array.isArray(splits)
   ) {
     return NextResponse.json(
-      {
-        error:
-          "groupId, paidBy, description, amountPence, splitType, category, and splits are required",
-      },
+      { error: "All fields are required" },
       { status: 400 }
     );
   }
 
-  const db = await readDb();
-
-  const group = db.groups.find((g) => g.id === groupId);
-  if (!group) {
+  const group = await getGroup(groupId);
+  if (!group)
     return NextResponse.json({ error: "Group not found" }, { status: 404 });
-  }
 
-  // ── Limit: max expenses per group ─────────────────────────────
-
-  const groupExpenseCount = db.expenses.filter(
-    (e) => e.groupId === groupId
-  ).length;
-
-  if (groupExpenseCount >= LIMITS.MAX_EXPENSES_PER_GROUP) {
+  // Limit: max expenses per group
+  const existing = await getExpenses(groupId);
+  if (existing.length >= LIMITS.MAX_EXPENSES_PER_GROUP) {
     return NextResponse.json(
       {
-        error: `This group has reached the maximum of ${LIMITS.MAX_EXPENSES_PER_GROUP} expenses.`,
+        error: `Maximum of ${LIMITS.MAX_EXPENSES_PER_GROUP} expenses per group.`,
       },
       { status: 422 }
     );
   }
 
-  const expense: Expense = {
+  const expense = await createExpense({
     id: `exp-${uid()}`,
     groupId,
     paidBy,
@@ -100,10 +80,7 @@ export async function POST(req: NextRequest) {
     category,
     splits,
     createdAt: now(),
-  };
-
-  db.expenses.push(expense);
-  await writeDb(db);
+  });
 
   return NextResponse.json(expense, { status: 201 });
 }
