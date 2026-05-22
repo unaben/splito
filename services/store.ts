@@ -1,9 +1,16 @@
 /**
- * store.ts
  * ─────────────────────────────────────────────────────────────
- * TODO - SWAP (future → Supabase):
- *   Replace fetch() calls with supabase client calls.
- *   Keep the same function signatures so callers stay unchanged.
+ * CLIENT-SIDE ONLY data layer.
+ * Uses fetch() to call your API routes — safe to import in
+ * Client Components and browser-side hooks.
+ *
+ * ⛔ Never import this in:
+ *   - Server Components
+ *   - Server Actions
+ *   - API route handlers
+ *   - lib/auth.ts or lib/middleware
+ *
+ * For server-side code, import lib/db.ts directly.
  * ─────────────────────────────────────────────────────────────
  */
 

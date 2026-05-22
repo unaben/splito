@@ -73,12 +73,6 @@ export interface SimplifiedDebt {
   amountPence: number;
 }
 
-export const LIMITS = {
-  MAX_GROUPS_PER_USER: 10,
-  MAX_MEMBERS_PER_GROUP: 10,
-  MAX_EXPENSES_PER_GROUP: 50,
-} as const;
-
 export type Size = "sm" | "md" | "lg";
 export type Variant = "primary" | "secondary" | "danger" | "ghost";
 export type BadgeVariant = "positive" | "negative" | "neutral";
@@ -94,3 +88,56 @@ export interface Db {
 }
 
 export type Params = { params: Promise<{ id: string }> };
+
+// ─── Row shapes returned by Supabase ──────────────────────────
+// These match the snake_case column names in the database.
+// We map them to camelCase for the rest of the app.
+
+export interface UserRow {
+  id: string;
+  email: string;
+  name: string;
+  avatar_initials: string;
+  avatar_bg: string;
+  avatar_fg: string;
+  is_seeded: boolean;
+  password_hash: string | null;
+}
+
+export interface GroupRow {
+  id: string;
+  name: string;
+  description: string | null;
+  emoji: string;
+  created_by: string;
+  created_at: string;
+  group_members: { user_id: string }[];
+}
+
+export interface ExpenseRow {
+  id: string;
+  group_id: string;
+  paid_by: string;
+  description: string;
+  amount_pence: number;
+  split_type: string;
+  category: string;
+  created_at: string;
+  expense_splits: {
+    user_id: string;
+    amount_pence: number;
+    is_settled: boolean;
+  }[];
+}
+
+export interface SettlementRow {
+  id: string;
+  group_id: string;
+  payer_id: string;
+  payee_id: string;
+  amount_pence: number;
+  status: string;
+  mock_payment_id: string | null;
+  created_at: string;
+  settled_at: string | null;
+}

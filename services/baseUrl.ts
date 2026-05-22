@@ -1,9 +1,6 @@
 export function baseUrl(): string {
-    // Set NEXT_PUBLIC_APP_URL in production  e.g. https://myapp.com
-    if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
-    // Vercel injects VERCEL_URL automatically (no protocol prefix)
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-    // Local dev fallback — uses the port Next.js is actually running on
-    const port = process.env.PORT ?? "3000";    
-    return `http://localhost:${port}`;
-  }
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  const port = process.env.PORT ?? process.env.NEXT_PUBLIC_PORT ?? "3000";
+  return `http://localhost:${port}`;
+}
