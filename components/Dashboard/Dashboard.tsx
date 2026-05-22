@@ -22,8 +22,6 @@ export default async function DashboardPage() {
     currentUserId
   );
 
-  console.log({ recentActivity });
-
   // Pair each group with its resolved balance
   const groupsWithBalance = groups.map((group, i) => ({
     group,
