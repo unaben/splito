@@ -1,7 +1,7 @@
 import { MemberList } from "@/components/MemberList";
 import { Navbar } from "@/components/Navbar";
 import { getCurrentUserId } from "@/lib/mockAuth";
-import { getAllUsers } from "@/services/store";
+import { getAllUsers } from "@/lib/db";
 import styles from "./members.module.css";
 import Link from "next/link";
 

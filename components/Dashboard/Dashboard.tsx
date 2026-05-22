@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AvatarStack } from "@/components/Avatar";
-import { getUsersByIds } from "../../services/store";
 import { formatPence, formatRelative } from "@/utils/balance";
 import { fetchDashboardData } from "./utils";
 import { authOptions } from "@/lib/auth";
 import { checkIsSeeded } from "@/lib/seedStatus";
 import { getServerSession } from "next-auth";
+import { getUsersByIds } from "@/lib/db";
 import styles from "./Dashboard.module.css";
 
 export default async function DashboardPage() {
@@ -21,6 +21,8 @@ export default async function DashboardPage() {
   const { groupBalances, recentActivity, groups } = await fetchDashboardData(
     currentUserId
   );
+
+  console.log({ recentActivity });
 
   // Pair each group with its resolved balance
   const groupsWithBalance = groups.map((group, i) => ({

@@ -1,4 +1,4 @@
-import { getExpenses } from "../../../services/store";
+import { getExpenses } from "@/lib/db";
 import type { Group } from "@/types";
 
 /**

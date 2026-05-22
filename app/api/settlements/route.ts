@@ -6,7 +6,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getSettlements, createSettlement, uid, now } from "@/lib/db";
+import { getSettlements, createSettlement } from "@/lib/db";
+import { uid, now } from "@/helper";
 import type { Settlement } from "@/types";
 
 export async function GET(req: NextRequest) {

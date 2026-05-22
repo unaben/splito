@@ -3,14 +3,14 @@
  * ─────────────────────────────────────────────────────────────
  * NextAuth v4 configuration.
  * Uses Credentials provider — email + bcrypt password against
- * the single registered user (user-1) in db.json.
+ * the single registered user (user-1) in supabase users table.
  * ─────────────────────────────────────────────────────────────
  */
 
-import type { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { readDb } from "@/lib/db";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { findOneUserByEmail } from "./db";
+import type { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
@@ -29,10 +29,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
 
-        const db = await readDb();
-        const user = db.users.find(
-          (u) => u.email.toLowerCase() === credentials.email.toLowerCase()
-        );
+        const user = await findOneUserByEmail(credentials.email);
 
         if (!user || user.isSeeded || !user.passwordHash) return null;
 

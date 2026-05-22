@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { CreateGroupForm } from "@/components/CreateGroupForm";
 import { getCurrentUserId } from "@/lib/mockAuth";
-import { getAllUsers } from "@/services/store";
+import { getAllUsers } from "@/lib/db";
 import styles from "./newGroup.module.css";
 
 export default async function NewGroupPage() {

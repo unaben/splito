@@ -1,6 +1,6 @@
+import { getGroups } from "@/lib/db";
 import { getGroupBalance } from "./getGroupBalance";
 import { getRecentActivity } from "./getRecentActivity";
-import { getGroups } from "@/services/store";
 
 const fetchDashboardData = async (userId: string) => {
   const groups = await getGroups(userId);

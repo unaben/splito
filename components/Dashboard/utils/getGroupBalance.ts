@@ -1,5 +1,5 @@
 import { calculateBalances } from "@/utils/calculateBalances";
-import { getExpenses, getSettlements } from "../../../services/store";
+import { getExpenses, getSettlements } from "@/lib/db";
 import type { Group } from "@/types";
 
 /** Returns the current user's net balance (pence) for a single group. */

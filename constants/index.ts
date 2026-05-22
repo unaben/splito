@@ -1,5 +1,6 @@
 import type { Db } from "@/types";
 
+// Remove
 export const SEED_DATA: Db = {
   users: [
     {
@@ -174,3 +175,9 @@ export const SEED_DATA: Db = {
     },
   ],
 };
+
+export const LIMITS = {
+  MAX_GROUPS_PER_USER: 10,
+  MAX_MEMBERS_PER_GROUP: 10,
+  MAX_EXPENSES_PER_GROUP: 50,
+} as const;

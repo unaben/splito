@@ -7,7 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createUser, getAllUsers, getUsersByIds, uid } from "@/lib/db";
+import { createUser, getAllUsers, getUsersByIds } from "@/lib/db";
+import { uid } from "@/helper";
 import type { User } from "@/types";
 
 export async function GET(req: NextRequest) {

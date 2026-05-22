@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/mockAuth";
 import SignoutButton from "@/components/SignoutButton/SignoutButton";
 import { Avatar } from "../Avatar";
-import { getUser } from "@/services/store";
+import { getUser } from "@/lib/db";
 import styles from "./Navbar.module.css";
 
 export async function Navbar() {
