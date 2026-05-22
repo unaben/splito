@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getCurrentUserId } from "@/lib/mockAuth";
-import { createGroup, updateGroup, deleteGroup, uid, now } from "@/lib/db";
+import { createGroup, updateGroup, deleteGroup } from "@/lib/db";
+import { now, uid } from "@/helper";
 
 const CreateGroupSchema = z.object({
   name: z.string().min(1, "Name is required").max(50),
