@@ -48,7 +48,7 @@ const ForgotPassword = () => {
         )}
 
         {step === "reset" && (
-          <StepReset {...{ error, setError, handleResetSubmit, setStep }} />
+          <StepReset {...{ error, setError, handleResetSubmit, setStep, email }} />
         )}
 
         {step !== "reset" && (

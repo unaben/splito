@@ -17,11 +17,12 @@ type StepResetProps = {
     e: React.SyntheticEvent<HTMLFormElement>,
     startTransition: TransitionStartFunction
   ) => void;
+  email: string
 };
 
 const StepReset = (props: StepResetProps) => {
   const [isPending, startTransition] = useTransition();
-  const { error, setError, setStep, handleResetSubmit } = props;
+  const { error, setError, setStep, handleResetSubmit, email } = props;
   return (
     <>
       <h1 className={styles.title}>Reset the app</h1>
@@ -55,6 +56,22 @@ const StepReset = (props: StepResetProps) => {
             placeholder={RESET_CONFIRMATION_WORD}
             autoComplete="off"
             autoFocus
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="resetEmail" className={styles.label}>
+            Your email address
+          </label>
+          <input
+            id="resetEmail"
+            name="resetEmail"
+            type="email"
+            className={styles.input}
+            placeholder="alice@example.com"
+            defaultValue={email}
+            required
+            autoComplete="email"
           />
         </div>
 

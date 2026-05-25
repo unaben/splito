@@ -1,23 +1,19 @@
 /**
- * lib/auth.ts
+ *
  * ─────────────────────────────────────────────────────────────
- * NextAuth v4 configuration.
- * Uses Credentials provider — email + bcrypt password against
- * the single registered user (user-1) in supabase users table.
+ *   - Looks up user by email (getUserByEmail)
+ *   - Checks ownerId === null (real user, not a mock member)
  * ─────────────────────────────────────────────────────────────
  */
 
-import bcrypt from "bcryptjs";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { findOneUserByEmail } from "./db";
 import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { getUserByEmail } from "@/lib/db";
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
-
-  pages: {
-    signIn: "/login",
-  },
+  pages: { signIn: "/login" },
 
   providers: [
     CredentialsProvider({
@@ -29,9 +25,8 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
 
-        const user = await findOneUserByEmail(credentials.email);
-
-        if (!user || user.isSeeded || !user.passwordHash) return null;
+        const user = await getUserByEmail(credentials.email);
+        if (!user || user.ownerId !== null || !user.passwordHash) return null;
 
         const valid = await bcrypt.compare(
           credentials.password,

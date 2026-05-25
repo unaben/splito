@@ -1,5 +1,5 @@
 /** Throw a readable error if a Supabase query fails */
-export function assert<T>(
+export function dbAssert<T>(
   data: T | null,
   error: { message: string } | null,
   context: string

@@ -10,7 +10,7 @@ const Registration = () => {
         spli<span className={styles.logoAccent}>to</span>
       </div>
       <h1 className={styles.title}>Create your account</h1>
-      <p className={styles.subtitle}>Set up Splito on this device</p>
+      <p className={styles.subtitle}>Free to use · No credit card needed</p>
 
       <form onSubmit={handleSubmitRegister} className={styles.form}>
         <div className={styles.field}>
@@ -22,7 +22,7 @@ const Registration = () => {
             name="name"
             type="text"
             className={styles.input}
-            placeholder="Alice Johnson"
+            placeholder="Alex Johnson"
             required
             autoFocus
           />
@@ -37,7 +37,7 @@ const Registration = () => {
             name="email"
             type="email"
             className={styles.input}
-            placeholder="alice@example.com"
+            placeholder="alex@example.com"
             required
           />
         </div>
@@ -60,14 +60,14 @@ const Registration = () => {
         {error && <p className={styles.error}>{error}</p>}
 
         <button type="submit" disabled={isPending} className={styles.btn}>
-          {isPending ? "Setting up…" : "Create account"}
+          {isPending ? "Creating account…" : "Create account"}
         </button>
       </form>
 
       <p className={styles.loginHint}>
-        Already registered?{" "}
+        Already have an account?{" "}
         <a href="/login" className={styles.loginLink}>
-          Log in
+          Sign in
         </a>
       </p>
     </div>
