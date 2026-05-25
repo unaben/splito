@@ -30,7 +30,7 @@ export async function proxy(req: NextRequest) {
     if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/register", req.url));
   }
 
   if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
