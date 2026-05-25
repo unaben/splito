@@ -1,7 +1,7 @@
 import { TransitionStartFunction, useState } from "react";
-import type { Step } from "../../ForgotPassword.types";
 import { resetPasswordAction } from "@/actions/resetPassword";
 import { resetAppAction } from "@/actions/resetApp";
+import type { Step } from "../../ForgotPassword.types";
 
 const useHandleSubmit = () => {
   const [step, setStep] = useState<Step>("email");
@@ -55,6 +55,7 @@ const useHandleSubmit = () => {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    formData.set("email", email);    
 
     startTransition(async () => {
       const result = await resetAppAction(formData);

@@ -4,4 +4,5 @@ export interface EditMemberFormProps {
   user: User;
   onCancel: () => void;
   onSaved: () => void;
+  currentUserId: string
 }

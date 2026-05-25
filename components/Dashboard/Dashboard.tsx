@@ -4,7 +4,6 @@ import { AvatarStack } from "@/components/Avatar";
 import { formatPence, formatRelative } from "@/utils/balance";
 import { fetchDashboardData } from "./utils";
 import { authOptions } from "@/lib/auth";
-import { checkIsSeeded } from "@/lib/seedStatus";
 import { getServerSession } from "next-auth";
 import { getUsersByIds } from "@/lib/db";
 import styles from "./Dashboard.module.css";
@@ -14,8 +13,7 @@ export default async function DashboardPage() {
   const currentUserId = (session?.user as { id?: string } | undefined)?.id;
 
   if (!currentUserId) {
-    const isSeeded = await checkIsSeeded();
-    redirect(isSeeded ? "/register" : "/login");
+    redirect("/login");
   }
 
   const { groupBalances, recentActivity, groups } = await fetchDashboardData(
@@ -40,17 +38,16 @@ export default async function DashboardPage() {
 
   // Fetch member users for every group in one parallel pass
   const allMemberIds = Array.from(new Set(groups.flatMap((g) => g.memberIds)));
-  const allMembers = await getUsersByIds(allMemberIds);
+  const allMembers = await getUsersByIds(allMemberIds, currentUserId);
   const membersById = Object.fromEntries(allMembers.map((u) => [u.id, u]));
 
   // Fetch payers for recent activity in one shot
   const payerIds = Array.from(new Set(recentActivity.map((e) => e.paidBy)));
-  const payers = await getUsersByIds(payerIds);
+  const payers = await getUsersByIds(payerIds, currentUserId);
   const payersById = Object.fromEntries(payers.map((u) => [u.id, u]));
 
   return (
     <main className={styles.main}>
-      {/* ── Stats ── */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <p className={styles.statLabel}>You are owed</p>
@@ -69,8 +66,6 @@ export default async function DashboardPage() {
           <p className={styles.statValue}>{groups.length}</p>
         </div>
       </div>
-
-      {/* ── Groups ── */}
       <section>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Your groups</h2>
@@ -134,8 +129,6 @@ export default async function DashboardPage() {
           </div>
         )}
       </section>
-
-      {/* ── Recent activity ── */}
       {recentActivity.length > 0 && (
         <section>
           <div className={styles.sectionHeader}>
