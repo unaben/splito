@@ -7,29 +7,36 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createUser, getAllUsers, getUsersByIds } from "@/lib/db";
-import { uid } from "@/helper";
+import { requireAuth } from "@/lib/requireAuth";
+import { getAllUsers, getUsersByIds, createUser } from "@/lib/db";
 import type { User } from "@/types";
+import { uid } from "@/helper";
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const idsParam = searchParams.get("ids");
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+  const { id: userId } = auth;
+
+  const idsParam = req.nextUrl.searchParams.get("ids");
 
   if (idsParam) {
     const ids = idsParam.split(",").map((s) => s.trim());
-    const users = await getUsersByIds(ids);
+    const users = await getUsersByIds(ids, userId);
     return NextResponse.json(users);
   }
 
-  const users = await getAllUsers();
+  const users = await getAllUsers(userId);
   return NextResponse.json(users);
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const body = await req.json();
   const { email, name, avatarInitials, avatarBg, avatarFg } = body as Omit<
     User,
-    "id" | "isSeeded"
+    "id" | "ownerId" | "onboardingComplete"
   >;
 
   if (!email || !name) {
@@ -46,7 +53,8 @@ export async function POST(req: NextRequest) {
     avatarInitials: avatarInitials ?? name.slice(0, 2).toUpperCase(),
     avatarBg: avatarBg ?? "#E5E7EB",
     avatarFg: avatarFg ?? "#111827",
-    isSeeded: true,
+    ownerId: null,
+    onboardingComplete: false,
   });
 
   return NextResponse.json(user, { status: 201 });
