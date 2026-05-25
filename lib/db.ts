@@ -1,7 +1,7 @@
 /**
+ *
  * ─────────────────────────────────────────────────────────────
  * SERVER-SIDE ONLY data access layer.
- * Talks directly to Supabase using the service role key.
  *
  * ✅ Import this in:
  *   - Server Components
@@ -12,14 +12,11 @@
  * ⛔ Never import this in:
  *   - Client Components  ('use client')
  *   - Browser-side hooks
- *
- * For client-side data fetching, use services/store.ts instead,
- * which calls your API routes over HTTP.
  * ─────────────────────────────────────────────────────────────
  */
 
 import { supabase } from "@/lib/supabase";
-import { now, assert } from "@/helper";
+import { now, dbAssert } from "@/helper";
 import type {
   User,
   Group,
@@ -31,7 +28,7 @@ import type {
   UserRow,
 } from "@/types";
 
-// ─── Row → App type mappers ────────────────────────────────────
+// ─── Mappers ──────────────────────────────────────────────────
 
 function toUser(row: UserRow): User {
   return {
@@ -41,7 +38,8 @@ function toUser(row: UserRow): User {
     avatarInitials: row.avatar_initials,
     avatarBg: row.avatar_bg,
     avatarFg: row.avatar_fg,
-    isSeeded: row.is_seeded,
+    ownerId: row.owner_id,
+    onboardingComplete: row.onboarding_complete,
     passwordHash: row.password_hash ?? undefined,
   };
 }
@@ -92,74 +90,118 @@ function toSettlement(row: SettlementRow): Settlement {
 
 // ─── User queries ──────────────────────────────────────────────
 
-export async function getUser(id: string): Promise<User | undefined> {
+/**
+ * Get a single user by ID.
+ * If ownerId is provided, only returns the user if they are:
+ *   - the owner themselves, or
+ *   - a mock member belonging to the owner
+ * This prevents one user from reading another user's data.
+ */
+export async function getUser(
+  id: string,
+  ownerId?: string
+): Promise<User | undefined> {
+  let query = supabase.from("users").select("*").eq("id", id);
+
+  if (ownerId) {
+    query = query.or(`id.eq.${ownerId},owner_id.eq.${ownerId}`);
+  }
+
+  const { data, error } = await query.single();
+  if (error || !data) return undefined;
+  return toUser(data);
+}
+
+/**
+ * Look up a real registered user by email (case-insensitive).
+ * Only returns users where owner_id is null — real accounts only,.
+ */
+export async function getUserByEmail(email: string): Promise<User | undefined> {
   const { data, error } = await supabase
     .from("users")
     .select("*")
-    .eq("id", id)
+    .ilike("email", email)
+    .is("owner_id", null)
     .single();
 
   if (error || !data) return undefined;
   return toUser(data);
 }
 
-export async function findOneUserByEmail(
-  email: string
-): Promise<
-  Pick<User, "id" | "name" | "email" | "isSeeded" | "passwordHash"> | undefined
-> {
-  const { data, error } = await supabase
-    .from("users")
-    .select("id, name, email, password_hash, is_seeded")
-    .ilike("email", email)
-    .single();
+/**
+ * Get users by IDs, scoped to the caller.
+ * Only returns users that are the caller themselves or their mock members.
+ */
+export async function getUsersByIds(
+  ids: string[],
+  ownerId?: string
+): Promise<User[]> {
+  if (ids.length === 0) return [];
 
-  if (error || !data) return undefined;
+  let query = supabase.from("users").select("*").in("id", ids);
 
-  return {
-    id: data.id,
-    name: data.name,
-    email: data.email,
-    isSeeded: data.is_seeded,
-    passwordHash: data.password_hash ?? undefined,
-  };
+  if (ownerId) {
+    query = query.or(`id.eq.${ownerId},owner_id.eq.${ownerId}`);
+  }
+
+  const { data, error } = await query;
+  return dbAssert(data, error, "getUsersByIds").map((r) => toUser(r));
 }
 
-export async function getUsersByIds(ids: string[]): Promise<User[]> {
-  if (ids.length === 0) return [];
+/**
+ * Get all users visible to the caller:
+ *   - themselves
+ *   - their own mock members
+ */
+export async function getAllUsers(ownerId?: string): Promise<User[]> {
+  let query = supabase.from("users").select("*");
+
+  if (ownerId) {
+    query = query.or(`id.eq.${ownerId},owner_id.eq.${ownerId}`);
+  }
+
+  const { data, error } = await query.order("id");
+  return dbAssert(data, error, "getAllUsers").map((r) => toUser(r));
+}
+
+/** Get all mock members belonging to a registered user */
+export async function getMockMembers(ownerId: string): Promise<User[]> {
   const { data, error } = await supabase
     .from("users")
     .select("*")
-    .in("id", ids);
-
-  return assert(data, error, "getUsersByIds").map((r) => toUser(r as UserRow));
+    .eq("owner_id", ownerId)
+    .order("id");
+  return dbAssert(data, error, "getMockMembers").map((r) => toUser(r));
 }
 
-export async function getAllUsers(): Promise<User[]> {
-  const { data, error } = await supabase.from("users").select("*").order("id");
-
-  return assert(data, error, "getAllUsers").map((r) => toUser(r as UserRow));
-}
-
-export async function createUser(
-  data: Omit<User, "id"> & { id: string }
-): Promise<User> {
+export async function createUser(data: {
+  id: string;
+  email: string;
+  name: string;
+  avatarInitials: string;
+  avatarBg: string;
+  avatarFg: string;
+  ownerId: string | null;
+  onboardingComplete: boolean;
+  passwordHash?: string;
+}): Promise<User> {
   const { data: row, error } = await supabase
     .from("users")
     .insert({
       id: data.id,
-      email: data.email,
+      email: data.email.toLowerCase(),
       name: data.name,
       avatar_initials: data.avatarInitials,
       avatar_bg: data.avatarBg,
       avatar_fg: data.avatarFg,
-      is_seeded: data.isSeeded,
+      owner_id: data.ownerId,
+      onboarding_complete: data.onboardingComplete,
       password_hash: data.passwordHash ?? null,
     })
     .select("*")
     .single();
 
-  return toUser(assert(row, error, "createUser") as UserRow);
+  return toUser(dbAssert(row, error, "createUser"));
 }
 
 export async function updateUser(
@@ -172,7 +214,7 @@ export async function updateUser(
       | "avatarInitials"
       | "avatarBg"
       | "avatarFg"
-      | "isSeeded"
+      | "onboardingComplete"
       | "passwordHash"
     >
   >
@@ -187,7 +229,9 @@ export async function updateUser(
       }),
       ...(data.avatarBg !== undefined && { avatar_bg: data.avatarBg }),
       ...(data.avatarFg !== undefined && { avatar_fg: data.avatarFg }),
-      ...(data.isSeeded !== undefined && { is_seeded: data.isSeeded }),
+      ...(data.onboardingComplete !== undefined && {
+        onboarding_complete: data.onboardingComplete,
+      }),
       ...(data.passwordHash !== undefined && {
         password_hash: data.passwordHash,
       }),
@@ -200,10 +244,25 @@ export async function updateUser(
   return toUser(row);
 }
 
+export async function deleteUser(id: string): Promise<boolean> {
+  const { error } = await supabase.from("users").delete().eq("id", id);
+  if (error) throw new Error(`[db/deleteUser] ${error.message}`);
+  return true;
+}
+
+export async function getUserExpenseCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("expense_splits")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId);
+
+  if (error) return 0;
+  return count ?? 0;
+}
+
 // ─── Group queries ─────────────────────────────────────────────
 
 export async function getGroups(userId: string): Promise<Group[]> {
-  // Step 1: get group IDs this user belongs to
   const { data: memberships, error: memberError } = await supabase
     .from("group_members")
     .select("group_id")
@@ -213,7 +272,6 @@ export async function getGroups(userId: string): Promise<Group[]> {
 
   const groupIds = memberships.map((m) => m.group_id);
 
-  // Step 2: fetch those groups with ALL their members
   const { data, error } = await supabase
     .from("groups")
     .select("*, group_members(user_id)")
@@ -221,16 +279,7 @@ export async function getGroups(userId: string): Promise<Group[]> {
     .order("created_at", { ascending: false });
 
   if (error || !data) return [];
-
-  return data.map((row) => ({
-    id: row.id,
-    name: row.name,
-    description: row.description ?? undefined,
-    emoji: row.emoji,
-    createdBy: row.created_by,
-    createdAt: row.created_at,
-    memberIds: row.group_members.map((m: { user_id: string }) => m.user_id),
-  }));
+  return data.map((r) => toGroup(r as GroupRow));
 }
 
 export async function getGroup(id: string): Promise<Group | undefined> {
@@ -253,7 +302,6 @@ export async function createGroup(data: {
   memberIds: string[];
   createdAt: string;
 }): Promise<Group> {
-  // Insert group row
   const { error: groupError } = await supabase.from("groups").insert({
     id: data.id,
     name: data.name,
@@ -262,19 +310,13 @@ export async function createGroup(data: {
     created_by: data.createdBy,
     created_at: data.createdAt,
   });
-
   if (groupError) throw new Error(`[db/createGroup] ${groupError.message}`);
-
-  // Insert one row per member into group_members
-  const memberRows = data.memberIds.map((userId) => ({
-    group_id: data.id,
-    user_id: userId,
-  }));
 
   const { error: membersError } = await supabase
     .from("group_members")
-    .insert(memberRows);
-
+    .insert(
+      data.memberIds.map((userId) => ({ group_id: data.id, user_id: userId }))
+    );
   if (membersError)
     throw new Error(`[db/createGroup members] ${membersError.message}`);
 
@@ -325,9 +367,7 @@ export async function updateGroup(
 }
 
 export async function deleteGroup(id: string): Promise<boolean> {
-  // Cascade deletes handle group_members, expenses, expense_splits, settlements
   const { error } = await supabase.from("groups").delete().eq("id", id);
-
   return !error;
 }
 
@@ -376,20 +416,16 @@ export async function createExpense(data: {
     category: data.category,
     created_at: data.createdAt,
   });
-
   if (expError) throw new Error(`[db/createExpense] ${expError.message}`);
 
-  const splitRows = data.splits.map((s) => ({
-    expense_id: data.id,
-    user_id: s.userId,
-    amount_pence: s.amountPence,
-    is_settled: s.isSettled,
-  }));
-
-  const { error: splitError } = await supabase
-    .from("expense_splits")
-    .insert(splitRows);
-
+  const { error: splitError } = await supabase.from("expense_splits").insert(
+    data.splits.map((s) => ({
+      expense_id: data.id,
+      user_id: s.userId,
+      amount_pence: s.amountPence,
+      is_settled: s.isSettled,
+    }))
+  );
   if (splitError)
     throw new Error(`[db/createExpense splits] ${splitError.message}`);
 
@@ -468,7 +504,7 @@ export async function getSettlements(groupId: string): Promise<Settlement[]> {
     .order("created_at", { ascending: false });
 
   if (error || !data) return [];
-  return data.map((r) => toSettlement(r as SettlementRow));
+  return data.map((r) => toSettlement(r));
 }
 
 export async function createSettlement(data: {
@@ -498,7 +534,7 @@ export async function createSettlement(data: {
     .select("*")
     .single();
 
-  return toSettlement(assert(row, error, "createSettlement") as SettlementRow);
+  return toSettlement(dbAssert(row, error, "createSettlement"));
 }
 
 export async function updateSettlementStatus(
@@ -507,32 +543,16 @@ export async function updateSettlementStatus(
 ): Promise<Settlement | undefined> {
   const { data: row, error } = await supabase
     .from("settlements")
-    .update({
-      status,
-      settled_at: status === "completed" ? now() : null,
-    })
+    .update({ status, settled_at: status === "completed" ? now() : null })
     .eq("id", id)
     .select("*")
     .single();
 
   if (error || !row) return undefined;
-  return toSettlement(row as SettlementRow);
+  return toSettlement(row);
 }
 
 export async function deleteSettlement(id: string): Promise<boolean> {
   const { error } = await supabase.from("settlements").delete().eq("id", id);
   return !error;
-}
-
-// ─── Seed status ───────────────────────────────────────────────
-// Used by middleware to decide whether to route to /register or /login
-
-export async function getSeedStatus(): Promise<boolean> {
-  const { data } = await supabase
-    .from("users")
-    .select("is_seeded")
-    .eq("id", "user-1")
-    .single();
-
-  return data?.is_seeded ?? true;
 }

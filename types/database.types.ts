@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       expense_splits: {
@@ -254,8 +229,9 @@ export type Database = {
           created_at: string
           email: string
           id: string
-          is_seeded: boolean
           name: string
+          onboarding_complete: boolean
+          owner_id: string | null
           password_hash: string | null
         }
         Insert: {
@@ -265,8 +241,9 @@ export type Database = {
           created_at?: string
           email: string
           id: string
-          is_seeded?: boolean
           name: string
+          onboarding_complete?: boolean
+          owner_id?: string | null
           password_hash?: string | null
         }
         Update: {
@@ -276,11 +253,20 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
-          is_seeded?: boolean
           name?: string
+          onboarding_complete?: boolean
+          owner_id?: string | null
           password_hash?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -416,9 +402,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

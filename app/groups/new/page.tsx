@@ -7,9 +7,11 @@ import styles from "./newGroup.module.css";
 
 export default async function NewGroupPage() {
   const currentUserId = await getCurrentUserId();
+  const allUsers = await getAllUsers(currentUserId);
 
-  const allUsers = await getAllUsers();
-  const otherUsers = allUsers.filter((user) => user.id !== currentUserId);
+  const otherGroupMembers = allUsers.filter(
+    (user) => user.id !== currentUserId
+  );
 
   return (
     <div className={styles.page}>
@@ -22,7 +24,7 @@ export default async function NewGroupPage() {
         <p className={styles.subheading}>
           Add friends and start splitting expenses
         </p>
-        <CreateGroupForm users={otherUsers} />
+        <CreateGroupForm users={otherGroupMembers} />
       </main>
     </div>
   );

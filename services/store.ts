@@ -1,4 +1,5 @@
 /**
+ *
  * ─────────────────────────────────────────────────────────────
  * CLIENT-SIDE ONLY data layer.
  * Uses fetch() to call your API routes — safe to import in
@@ -8,7 +9,7 @@
  *   - Server Components
  *   - Server Actions
  *   - API route handlers
- *   - lib/auth.ts or lib/middleware
+ *   - lib/auth.ts or proxy.ts
  *
  * For server-side code, import lib/db.ts directly.
  * ─────────────────────────────────────────────────────────────
@@ -16,6 +17,8 @@
 
 import type { User, Group, Expense, Settlement } from "@/types";
 import { fetchApi } from "./fetchApi";
+
+// ─── User queries ─────────────────────────────────────────────
 
 export async function getUser(id: string): Promise<User | undefined> {
   try {
@@ -34,6 +37,7 @@ export async function getAllUsers(): Promise<User[]> {
   return fetchApi<User[]>("/api/users");
 }
 
+// TODO
 export async function createUser(data: Omit<User, "id">): Promise<User> {
   return fetchApi<User>("/api/users", {
     method: "POST",
@@ -44,7 +48,15 @@ export async function createUser(data: Omit<User, "id">): Promise<User> {
 export async function updateUser(
   id: string,
   data: Partial<
-    Pick<User, "name" | "email" | "avatarInitials" | "avatarBg" | "avatarFg">
+    Pick<
+      User,
+      | "name"
+      | "email"
+      | "avatarInitials"
+      | "avatarBg"
+      | "avatarFg"
+      | "onboardingComplete"
+    >
   >
 ): Promise<User | undefined> {
   try {
@@ -57,6 +69,7 @@ export async function updateUser(
   }
 }
 
+// TODO
 export async function deleteUser(id: string): Promise<boolean> {
   try {
     await fetchApi<{ deleted: boolean }>(`/api/users/${id}`, {
@@ -68,7 +81,7 @@ export async function deleteUser(id: string): Promise<boolean> {
   }
 }
 
-// ─── Group queries ────────────────────────────────────────────────────────────
+// ─── Group queries ────────────────────────────────────────────
 
 export async function getGroups(userId: string): Promise<Group[]> {
   return fetchApi<Group[]>(`/api/groups?userId=${userId}`);
@@ -120,7 +133,7 @@ export async function deleteGroup(id: string): Promise<boolean> {
   }
 }
 
-// ─── Expense queries ──────────────────────────────────────────────────────────
+// ─── Expense queries ──────────────────────────────────────────
 
 export async function getExpenses(groupId: string): Promise<Expense[]> {
   return fetchApi<Expense[]>(`/api/expenses?groupId=${groupId}`);
@@ -179,7 +192,7 @@ export async function deleteExpense(id: string): Promise<boolean> {
   }
 }
 
-// ─── Settlement queries ───────────────────────────────────────────────────────
+// ─── Settlement queries ───────────────────────────────────────
 
 export async function getSettlements(groupId: string): Promise<Settlement[]> {
   return fetchApi<Settlement[]>(`/api/settlements?groupId=${groupId}`);
@@ -233,5 +246,3 @@ export async function deleteSettlement(id: string): Promise<boolean> {
     return false;
   }
 }
-
-

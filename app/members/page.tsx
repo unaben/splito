@@ -1,39 +1,42 @@
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getUser, getMockMembers } from "@/lib/db";
 import { MemberList } from "@/components/MemberList";
 import { Navbar } from "@/components/Navbar";
-import { getCurrentUserId } from "@/lib/mockAuth";
-import { getAllUsers } from "@/lib/db";
 import styles from "./members.module.css";
-import Link from "next/link";
 
 export default async function MembersPage() {
-  const [allUsers, currentUserId] = await Promise.all([
-    getAllUsers(),
-    getCurrentUserId(),
+  const session = await getServerSession(authOptions);
+  const currentUserId = (session?.user as { id?: string } | undefined)?.id;
+  if (!currentUserId) redirect("/login");
+
+  const [currentUser, mockMembers] = await Promise.all([
+    getUser(currentUserId),
+    getMockMembers(currentUserId),
   ]);
 
-  const sortedMembers = [
-    ...allUsers.filter((u) => u.id === currentUserId),
-    ...allUsers.filter((u) => u.id !== currentUserId),
-  ];
+  if (!currentUser) redirect("/login");
 
   return (
     <div className={styles.page}>
       <Navbar />
       <main className={styles.main}>
-        <Link href="/dashboard" className={styles.backLink}>
-          ← Back to dashboard
-        </Link>
         <div className={styles.header}>
           <div>
-            <h1 className={styles.title}>Group members</h1>
+            <h1 className={styles.title}>Members</h1>
             <p className={styles.subtitle}>
-              Personalize the people who appear in your groups. Your own profile
-              is managed separately.
+              People you split expenses with. Add or edit them here —
+              they&apos;ll appear in the member picker when creating a group.
             </p>
           </div>
         </div>
 
-        <MemberList members={sortedMembers} currentUserId={currentUserId} />
+        <MemberList
+          members={mockMembers}
+          currentUser={currentUser}
+          currentUserId={currentUserId}
+        />
       </main>
     </div>
   );

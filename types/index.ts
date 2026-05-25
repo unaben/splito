@@ -5,7 +5,8 @@ export interface User {
   avatarInitials: string;
   avatarBg: string;
   avatarFg: string;
-  isSeeded: boolean;
+  ownerId: string | null;
+  onboardingComplete: boolean;
   passwordHash?: string;
 }
 
@@ -89,10 +90,7 @@ export interface Db {
 
 export type Params = { params: Promise<{ id: string }> };
 
-// ─── Row shapes returned by Supabase ──────────────────────────
-// These match the snake_case column names in the database.
-// We map them to camelCase for the rest of the app.
-
+// ─── Row shapes ───────────────────────────────────────────────
 export interface UserRow {
   id: string;
   email: string;
@@ -100,10 +98,10 @@ export interface UserRow {
   avatar_initials: string;
   avatar_bg: string;
   avatar_fg: string;
-  is_seeded: boolean;
+  owner_id: string | null;
+  onboarding_complete: boolean;
   password_hash: string | null;
 }
-
 export interface GroupRow {
   id: string;
   name: string;
@@ -113,7 +111,6 @@ export interface GroupRow {
   created_at: string;
   group_members: { user_id: string }[];
 }
-
 export interface ExpenseRow {
   id: string;
   group_id: string;
@@ -129,7 +126,6 @@ export interface ExpenseRow {
     is_settled: boolean;
   }[];
 }
-
 export interface SettlementRow {
   id: string;
   group_id: string;
