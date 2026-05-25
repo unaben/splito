@@ -15,7 +15,6 @@ export async function resetAppAction(formData: FormData) {
   }
 
   const user = await getUserByEmail(email);
-  console.log("reset email received:", email);
 
   if (!user || user.ownerId !== null) {
     return { error: "No account found with that email address." };
