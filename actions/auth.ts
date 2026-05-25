@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { getUser, updateUser } from "@/lib/db";
-import { groupsTableIsEmpty, insertSeedData } from "@/lib";
+import { getUserByEmail, createUser } from "@/lib/db";
+import { uid } from "@/helper";
 
 const RegisterSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50),
@@ -23,15 +23,10 @@ export async function registerAction(formData: FormData) {
     return { error: parsed.error.errors[0].message };
   }
 
-  const userOne = await getUser("user-1");
-
-  if (!userOne) {
-    return { error: "Setup error: base user not found." };
-  }
-
-  if (!userOne.isSeeded) {
+  const existing = await getUserByEmail(parsed.data.email);
+  if (existing) {
     return {
-      error: "An account already exists on this device. Please log in.",
+      error: "An account with this email already exists. Please log in.",
     };
   }
 
@@ -39,22 +34,24 @@ export async function registerAction(formData: FormData) {
 
   const initials = parsed.data.name
     .split(" ")
-    .map((w) => w[0])
+    .map((w: string) => w[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
 
-  await updateUser("user-1", {
-    name: parsed.data.name,
-    email: parsed.data.email.toLowerCase(),
-    avatarInitials: initials,
-    passwordHash,
-    isSeeded: false,
-  });
-  
-  if (await groupsTableIsEmpty()) {
-    await insertSeedData();
-  }
+  const userId = `user-${uid()}`;
 
-  return { success: true };
+  await createUser({
+    id: userId,
+    email: parsed.data.email,
+    name: parsed.data.name,
+    avatarInitials: initials,
+    avatarBg: "#CCFCE7",
+    avatarFg: "#065F46",
+    ownerId: null,
+    onboardingComplete: false,
+    passwordHash,
+  });
+
+  return { success: true, userId };
 }

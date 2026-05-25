@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { getUser, updateUser } from "@/lib/db";
+import { getUserByEmail, updateUser } from "@/lib/db";
 
 const ResetPasswordSchema = z
   .object({
@@ -23,24 +23,18 @@ export async function resetPasswordAction(formData: FormData) {
   };
 
   const parsed = ResetPasswordSchema.safeParse(raw);
-
   if (!parsed.success) {
     return { error: parsed.error.errors[0].message };
   }
 
-  const userOne = await getUser("user-1");
+  const user = await getUserByEmail(parsed.data.email);
 
-  if (!userOne || userOne.isSeeded) {
-    return { error: "No account found. Please register first." };
-  }
-
-  if (userOne.email.toLowerCase() !== parsed.data.email.toLowerCase()) {
+  if (!user || user.ownerId !== null || !user.passwordHash) {
     return { error: "No account found with that email address." };
   }
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
-
-  await updateUser("user-1", { passwordHash });
+  await updateUser(user.id, { passwordHash });
 
   return { success: true };
 }

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "generate:types": "supabase gen types typescript --project-id agubbszxssxyuptfmtsx > lib/supabase/database.types.ts"
+    "types:supabase": "supabase gen types typescript --project-id agubbszxssxyuptfmtsx > types/database.types.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.1",
