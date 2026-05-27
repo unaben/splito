@@ -29,6 +29,7 @@ export type ExpenseCategory =
   | "activities"
   | "shopping"
   | "utilities"
+  | "flight"
   | "other";
 
 export interface ExpenseSplit {

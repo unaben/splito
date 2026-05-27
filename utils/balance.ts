@@ -48,6 +48,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   shopping: "Shopping",
   utilities: "Utilities",
   other: "Other",
+  flight: 'Flight'
 };
 
 export const CATEGORY_EMOJI: Record<string, string> = {
@@ -57,5 +58,6 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   activities: "🎭",
   shopping: "🛍️",
   utilities: "💡",
+  flight: '🛩️',
   other: "📦",
 };
