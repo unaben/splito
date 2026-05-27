@@ -1,0 +1,89 @@
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  transition: background 0.15s;
+}
+.trigger:hover {
+  background: var(--color-brand-dark);
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+@media (min-width: 640px) {
+  .overlay {
+    align-items: center;
+  }
+}
+
+.modal {
+  width: 100%;
+  max-width: 480px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border-light);
+}
+.headerTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.closeBtn {
+  background: inherit;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-text-muted);
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: var(--color-text-primary);
+}
+
+/* Success state */
+.successState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px var(--space-5);
+  gap: var(--space-2);
+  color: var(--color-brand);
+}
+.successIcon {
+  font-size: 36px;
+}
+.successText {
+  font-size: 16px;
+  font-weight: 500;
+}
+
