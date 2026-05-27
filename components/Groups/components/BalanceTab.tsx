@@ -63,7 +63,7 @@ const BalanceTab = (props: BalanceTabProps) => {
                 <span className={styles.debtName}>
                   {from?.id === currentUserId ? "You" : from?.name}
                 </span>
-                <span className={styles.debtArrow}>→</span>
+                <span className={styles.debtArrow}>owe</span>
                 <span className={styles.debtName}>
                   {to?.id === currentUserId ? "you" : to?.name}
                 </span>
