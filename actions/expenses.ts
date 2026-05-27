@@ -20,6 +20,7 @@ const AddExpenseSchema = z.object({
     "activities",
     "shopping",
     "utilities",
+    "flight",
     "other",
   ]),
 });
@@ -33,7 +34,7 @@ export async function addExpenseAction(formData: FormData) {
     splitType: formData.get("splitType"),
     category: formData.get("category"),
   };
-
+  
   const parsed = AddExpenseSchema.safeParse(raw);
   if (!parsed.success) {
     return { error: parsed.error.errors[0].message };
@@ -76,7 +77,12 @@ export async function addExpenseAction(formData: FormData) {
 }
 
 export async function deleteExpenseAction(id: string, groupId: string) {
-  await deleteExpense(id);
+  try {
+    await deleteExpense(id);
+  } catch {
+    return { error: "Failed to delete expense." };
+  }
+
   revalidatePath(`/groups/${groupId}`);
   revalidatePath("/dashboard");
   return { success: true };
