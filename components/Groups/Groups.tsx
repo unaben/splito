@@ -13,7 +13,6 @@ import OwnerBalanceView from "./components/OwnerBalanceView";
 import type { GroupsProps } from "./Groups.types";
 import styles from "./Groups.module.css";
 
-
 const tabOptions = ["balances", "expenses", "activity"] as const;
 
 const Groups = async ({ id, searchParamsTab }: GroupsProps) => {
@@ -24,7 +23,6 @@ const Groups = async ({ id, searchParamsTab }: GroupsProps) => {
   const currentUserId = await getCurrentUserId();
   const tab = searchParamsTab ?? "balances";
 
-  // Fan out all independent fetches in parallel
   const [members, expenses, settlements] = await Promise.all([
     getUsersByIds(group.memberIds),
     getExpenses(group.id),

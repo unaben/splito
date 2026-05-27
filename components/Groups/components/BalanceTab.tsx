@@ -1,14 +1,14 @@
 import { formatPence } from "@/utils";
 import { Avatar } from "@/components/Avatar";
 import type { Balance, SimplifiedDebt, User } from "@/types";
-import styles from "../Groups.module.css";
 import { getMember } from "../utils/getMember";
+import styles from "../Groups.module.css";
 
 type BalanceTabProps = {
   balances: Balance[];
   currentUserId: string;
   debts: SimplifiedDebt[];
-  members: User[]
+  members: User[];
 };
 
 const BalanceTab = (props: BalanceTabProps) => {
