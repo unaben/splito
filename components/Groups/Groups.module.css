@@ -15,3 +15,320 @@
 .backLink:hover {
   color: var(--color-text-secondary);
 }
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.groupEmoji {
+  font-size: 30px;
+}
+
+.groupName {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.groupDesc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* Stats row */
+.statsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.statDivider {
+  color: var(--color-border);
+  font-size: 18px;
+}
+
+.statText {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.statTextBold {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* Balance banner */
+.balanceBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid;
+}
+
+.balanceBannerNeg {
+  background: var(--color-negative-bg);
+  border-color: #fecaca;
+}
+
+.balanceBannerPos {
+  background: var(--color-positive-bg);
+  border-color: #a7f3d0;
+}
+
+.balanceBannerText {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.balanceBannerTextNeg {
+  color: var(--color-negative-fg);
+}
+
+.balanceBannerTextPos {
+  color: var(--color-positive-fg);
+}
+
+.balanceBannerSub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 3px;
+}
+
+.settledBanner {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid #a7f3d0;
+  background: var(--color-positive-bg);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-positive-fg);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--color-neutral-bg);
+  border-radius: var(--radius-md);
+}
+
+.tab {
+  flex: 1;
+  padding: 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tab:hover {
+  color: var(--color-text-primary);
+}
+
+.tabActive {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Balances tab */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.balanceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.balanceRow:last-child {
+  border-bottom: none;
+}
+
+.balanceMember {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.balanceName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.balanceRole {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.badgePositive {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--color-positive-bg);
+  color: var(--color-positive-fg);
+}
+
+.badgeNegative {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--color-negative-bg);
+  color: var(--color-negative-fg);
+}
+
+.badgeNeutral {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--color-neutral-bg);
+  color: var(--color-neutral-fg);
+}
+
+.suggestedPayments {
+  padding: var(--space-4);
+}
+
+.suggestedTitle {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.debtRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.debtName {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.debtArrow {
+  color: var(--color-text-muted);
+}
+
+.debtAmount {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* Activity tab */
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityEmoji {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.activityBody {
+  flex: 1;
+}
+
+.activityTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.activityMeta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.activityRight {
+  text-align: right;
+}
+
+.activityAmount {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.activityAmountPos {
+  color: var(--color-positive-fg);
+}
+
+.activityStatus {
+  display: inline-flex;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.activityStatusCompleted {
+  background: var(--color-positive-bg);
+  color: var(--color-positive-fg);
+}
+
+.activityStatusPending {
+  background: var(--color-neutral-bg);
+  color: var(--color-neutral-fg);
+}
+
+.emptyActivity {
+  padding: 40px var(--space-4);
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -22,6 +23,9 @@ export default async function MembersPage() {
     <div className={styles.page}>
       <Navbar />
       <main className={styles.main}>
+        <Link href="/dashboard" className={styles.backLink}>
+          ← Dashboard
+        </Link>
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Members</h1>
