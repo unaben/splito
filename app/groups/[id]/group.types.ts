@@ -1,4 +1,4 @@
 export interface GroupPageProps {
-    params: { id: string };
-    searchParams: { tab?: string };
-  }
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}

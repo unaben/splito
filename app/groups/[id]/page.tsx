@@ -1,13 +1,12 @@
 import { Navbar } from "@/components/Navbar";
 import Groups from "@/components/Groups/Groups";
+import type { GroupPageProps } from "./group.types";
 import styles from "./group.module.css";
 
-interface GroupsProps {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
-
-export default async function GroupPage({ params, searchParams }: GroupsProps) {
+export default async function GroupPage({
+  params,
+  searchParams,
+}: GroupPageProps) {
   const { id } = await params;
   const { tab } = await searchParams;
 
