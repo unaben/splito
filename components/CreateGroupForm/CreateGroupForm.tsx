@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import cn from "classnames";
 import { Avatar } from "../Avatar";
 import { EMOJIS } from "./constants";
@@ -17,8 +18,17 @@ export function CreateGroupForm({ users }: CreateGroupFormProps) {
     setSelectedMembers,
     handleSubmitCreateGroupForm,
     selectedEmoji,
-    selectedMembers
+    selectedMembers,
+    groupName,
+    setGroupName,
+    groupDescription,
+    setGroupDescription,
   } = useHandleSubmitCreateGroupForm();
+
+  const modifiedErrorMsg =
+    error === "Array must contain at least 1 element(s)"
+      ? "At least one member is required to continue"
+      : error;
 
   return (
     <form onSubmit={handleSubmitCreateGroupForm} className={styles.form}>
@@ -50,6 +60,8 @@ export function CreateGroupForm({ users }: CreateGroupFormProps) {
           placeholder="e.g. Portugal Trip, Flat Expenses"
           required
           maxLength={50}
+          value={groupName}
+          onChange={(e) => setGroupName(e.target.value)}
         />
       </div>
       <div className={styles.field}>
@@ -62,11 +74,28 @@ export function CreateGroupForm({ users }: CreateGroupFormProps) {
           className={styles.input}
           placeholder="What's this group for?"
           maxLength={200}
+          value={groupDescription}
+          onChange={(e) => setGroupDescription(e.target.value)}
         />
       </div>
       <div className={styles.field}>
-        <label className={styles.label}>Add members</label>
-        <p className={styles.memberHint}>You&apos;ll be added automatically</p>
+        <div
+          className={cn(styles.addMember, {
+            [styles.alignStart]: users.length === 4,
+          })}
+        >
+          <div>
+            <label className={styles.label}>Add members</label>
+            <p className={styles.memberHint}>
+              You&apos;ll be added automatically
+            </p>
+          </div>
+          {users.length < 4 && (
+            <Link className={styles.addMemberLink} href="/members">
+              + Add member{" "}
+            </Link>
+          )}
+        </div>
         <div className={styles.memberList}>
           {users.map((user) => {
             const isSelected = selectedMembers.includes(user.id);
@@ -107,7 +136,7 @@ export function CreateGroupForm({ users }: CreateGroupFormProps) {
         </div>
       </div>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {modifiedErrorMsg && <p className={styles.error}>{modifiedErrorMsg}</p>}
 
       <div className={styles.actions}>
         <button

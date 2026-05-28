@@ -1,11 +1,13 @@
 "use client";
 
-import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import Link from "next/link";
+import { toTitleCase } from "@/utils";
 import { MAX_MOCK_MEMBERS } from "@/constants";
-import { CreateMemberForm } from "../CreateMemberForm";
 import { Avatar } from "@/components/Avatar";
 import { EditMemberForm } from "../EditMemberForm";
 import useMemberList from "./hooks/useMemberList";
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import { CreateMemberForm } from "../CreateMemberForm";
 import type { MemberListProps } from "./MemberList.types";
 import styles from "./MemberList.module.css";
 
@@ -50,6 +52,11 @@ function MemberList(props: MemberListProps) {
             + Add member
           </button>
         )}
+        {!canAddMore && !isAdding && (
+          <Link className={styles.link} href="/groups/new">
+            Create group
+          </Link>
+        )}
       </div>
       {isAdding && (
         <div className={styles.addFormWrap}>
@@ -81,7 +88,9 @@ function MemberList(props: MemberListProps) {
               <div className={styles.memberInfo}>
                 <Avatar user={currentUser} size="md" />
                 <div>
-                  <p className={styles.memberName}>{currentUser?.name} (you)</p>
+                  <p className={styles.memberName}>
+                    {toTitleCase(currentUser?.name)} (you)
+                  </p>
                   <p className={styles.memberEmail}>{currentUser?.email}</p>
                 </div>
               </div>
@@ -99,7 +108,9 @@ function MemberList(props: MemberListProps) {
                     <Avatar user={member} size="md" />
                     <div>
                       <p className={styles.memberName}>
-                        {isCurrentUser ? `${member.name} (you)` : member.name}
+                        {isCurrentUser
+                          ? `${member.name} (you)`
+                          : toTitleCase(member.name)}
                       </p>
                       <p className={styles.memberEmail}>{member.email}</p>
                     </div>
