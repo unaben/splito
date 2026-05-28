@@ -15,13 +15,13 @@ import styles from "./Groups.module.css";
 
 const tabOptions = ["balances", "expenses", "activity"] as const;
 
-const Groups = async ({ id, searchParamsTab }: GroupsProps) => {
+const Groups = async ({ id, searchParams }: GroupsProps) => {
   const group = await getGroup(id);
 
   if (!group) notFound();
 
   const currentUserId = await getCurrentUserId();
-  const tab = searchParamsTab ?? "balances";
+  const tab = searchParams ?? "balances";
 
   const [members, expenses, settlements] = await Promise.all([
     getUsersByIds(group.memberIds),

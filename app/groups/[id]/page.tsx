@@ -14,7 +14,7 @@ export default async function GroupPage({ params, searchParams }: GroupsProps) {
   return (
     <div className={styles.page}>
       <Navbar />
-      <Groups id={id} searchParamsTab={tab} />
+      <Groups id={id} searchParams={tab} />
     </div>
   );
 }

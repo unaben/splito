@@ -2,7 +2,7 @@ import type { Expense, Settlement } from "@/types";
 
 export type GroupsProps = {
   id: string;
-  searchParamsTab: string | string[] | undefined;
+  searchParams: string | string[] | undefined;
 };
 
 export type ActivityItem =

@@ -46,10 +46,6 @@
   transition: opacity 150ms;
 }
 
-.addBtn:hover {
-  opacity: 0.88;
-}
-
 .link {
   display: flex;
   align-items: center;
@@ -66,7 +62,8 @@
   transition: opacity 150ms;
 }
 
-.addBtn:hover {
+.addBtn:hover,
+.link:hover {
   opacity: 0.88;
 }
 
