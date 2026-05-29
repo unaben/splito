@@ -26,6 +26,15 @@ type MockExpenseData =  {
   balFg: string
 }
 
+type ExpenseIntroMock =  {
+  name: string
+  note: string
+  y: number
+  bg: string
+  fg: string
+  border: string
+}
+
 export const options: Array<Options> = [
   {
     value: "example",
@@ -114,5 +123,32 @@ export const mockExpense: Array<MockExpenseData> = [
     fg: "#92400E",
     balBg: "#FEE2E2",
     balFg: "#991B1B",
+  },
+]
+
+export const expenseMocks: Array<ExpenseIntroMock> = [
+  {
+    name: "Sarah",
+    note: "£30 — pre-settled ✓",
+    y: 18,
+    bg: "#EDE9FE",
+    fg: "#5B21B6",
+    border: "#C4B5FD",
+  },
+  {
+    name: "You",
+    note: "£30 — you owe this",
+    y: 68,
+    bg: "#FEE2E2",
+    fg: "#991B1B",
+    border: "#FCA5A5",
+  },
+  {
+    name: "Marcus",
+    note: "£30 — Marcus owes",
+    y: 118,
+    bg: "#FEE2E2",
+    fg: "#991B1B",
+    border: "#FCA5A5",
   },
 ]

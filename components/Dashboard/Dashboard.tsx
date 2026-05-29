@@ -2,10 +2,15 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AvatarStack } from "@/components/Avatar";
 import { formatPence, formatRelative } from "@/utils/balance";
-import { fetchDashboardData } from "./utils";
+import {
+  fetchDashboardData,
+  getGroupBalances,
+  getGroupsWithBalance,
+  getMembersById,
+  getPayersById,
+} from "./utils";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { getUsersByIds } from "@/lib/db";
 import styles from "./Dashboard.module.css";
 
 export default async function DashboardPage() {
@@ -19,32 +24,10 @@ export default async function DashboardPage() {
   const { groupBalances, recentActivity, groups } = await fetchDashboardData(
     currentUserId
   );
-
-  // Pair each group with its resolved balance
-  const groupsWithBalance = groups.map((group, i) => ({
-    group,
-    balance: groupBalances[i],
-  }));
-
-  // Aggregate totals from the resolved balance array
-  const { totalOwed, totalOwing } = groupBalances.reduce(
-    (acc, balance) => ({
-      totalOwed: balance > 0 ? acc.totalOwed + balance : acc.totalOwed,
-      totalOwing:
-        balance < 0 ? acc.totalOwing + Math.abs(balance) : acc.totalOwing,
-    }),
-    { totalOwed: 0, totalOwing: 0 }
-  );
-
-  // Fetch member users for every group in one parallel pass
-  const allMemberIds = Array.from(new Set(groups.flatMap((g) => g.memberIds)));
-  const allMembers = await getUsersByIds(allMemberIds, currentUserId);
-  const membersById = Object.fromEntries(allMembers.map((u) => [u.id, u]));
-
-  // Fetch payers for recent activity in one shot
-  const payerIds = Array.from(new Set(recentActivity.map((e) => e.paidBy)));
-  const payers = await getUsersByIds(payerIds, currentUserId);
-  const payersById = Object.fromEntries(payers.map((u) => [u.id, u]));
+  const groupsWithBalance = getGroupsWithBalance(groupBalances, groups);
+  const { totalOwed, totalOwing } = getGroupBalances(groupBalances);
+  const membersById = await getMembersById(groups, currentUserId);
+  const payersById = await getPayersById(currentUserId, recentActivity);
 
   return (
     <main className={styles.main}>

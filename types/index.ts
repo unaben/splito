@@ -91,6 +91,20 @@ export interface Db {
 
 export type Params = { params: Promise<{ id: string }> };
 
+export type RecentActivity =  {
+  groupName: string;
+  groupEmoji: string;
+  id: string;
+  groupId: string;
+  paidBy: string;
+  description: string;
+  amountPence: number;
+  splitType: SplitType;
+  category: ExpenseCategory;
+  createdAt: string;
+  splits: ExpenseSplit[];
+}
+
 // ─── Row shapes ───────────────────────────────────────────────
 export interface UserRow {
   id: string;

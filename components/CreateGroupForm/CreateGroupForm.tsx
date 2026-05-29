@@ -5,7 +5,7 @@ import cn from "classnames";
 import { Avatar } from "../Avatar";
 import { EMOJIS } from "./constants";
 import { toggleMember } from "./utils";
-import useHandleSubmitCreateGroupForm from "./hooks/useHandleSubmitCreateGroupForm";
+import useHandleGroupForm from "./hooks/useHandleGroupForm";
 import type { CreateGroupFormProps } from "./CreateGroupForm.types";
 import styles from "./CreateGroupForm.module.css";
 
@@ -16,14 +16,14 @@ export function CreateGroupForm({ users }: CreateGroupFormProps) {
     error,
     setSelectedEmoji,
     setSelectedMembers,
-    handleSubmitCreateGroupForm,
+    handleGroupForm,
     selectedEmoji,
     selectedMembers,
     groupName,
     setGroupName,
     groupDescription,
     setGroupDescription,
-  } = useHandleSubmitCreateGroupForm();
+  } = useHandleGroupForm();
 
   const modifiedErrorMsg =
     error === "Array must contain at least 1 element(s)"
@@ -31,7 +31,7 @@ export function CreateGroupForm({ users }: CreateGroupFormProps) {
       : error;
 
   return (
-    <form onSubmit={handleSubmitCreateGroupForm} className={styles.form}>
+    <form onSubmit={handleGroupForm} className={styles.form}>
       <div className={styles.field}>
         <label className={styles.label}>Group icon</label>
         <div className={styles.emojiGrid}>

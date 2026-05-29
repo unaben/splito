@@ -3,7 +3,7 @@ import { createGroupAction } from "@/actions/groups";
 import { useRouter } from "next/navigation";
 import useSessionStorage from "@/hooks/useSessionStorage";
 
-const useHandleSubmitCreateGroupForm = () => {
+const useHandleGroupForm = () => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +15,7 @@ const useHandleSubmitCreateGroupForm = () => {
     ""
   );
 
-  async function handleSubmitCreateGroupForm(
+  async function handleGroupForm(
     e: React.SyntheticEvent<HTMLFormElement>
   ) {
     e.preventDefault();
@@ -42,7 +42,7 @@ const useHandleSubmitCreateGroupForm = () => {
     error,
     setSelectedEmoji,
     setSelectedMembers,
-    handleSubmitCreateGroupForm,
+    handleGroupForm,
     selectedEmoji,
     selectedMembers,
     groupName,
@@ -52,4 +52,4 @@ const useHandleSubmitCreateGroupForm = () => {
   };
 };
 
-export default useHandleSubmitCreateGroupForm;
+export default useHandleGroupForm;

@@ -1,34 +1,22 @@
-import { ChangeEvent, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { options } from "../data";
 import styles from "../Welcome.module.css";
-import { MAX_INPUT_COUNT, STEP_COUNT, MIN_INPUT_COUNT } from "@/constants";
 import { AddUserForm } from "@/components/AddUserForm";
+import useMemberStep from "../hooks/useMemberStep";
 
 type MembersStepProps = {
   choice: string;
   setChoice: (v: string) => void;
   customNames: string[];
-  setCustomNames: (n: string[]) => void;
+  setCustomNames: Dispatch<SetStateAction<string[]>>;
   onFinish: () => void;
 };
 
 function MembersStep(props: MembersStepProps) {
   const { choice, setChoice, customNames, setCustomNames, onFinish } = props;
-  const [inputCount, setInputCount] = useState<number>(1);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, i: number) => {
-    const next = [...customNames];
-    next[i] = e.target.value;
-    setCustomNames(next);
-  };
-
-  const handleIncrement = () => {
-    setInputCount((prev) => Math.min(MAX_INPUT_COUNT, prev + STEP_COUNT));
-  };
-
-  const handleDecrement = () => {
-    setInputCount((prev) => Math.max(MIN_INPUT_COUNT, prev - STEP_COUNT));
-  };
+  const { inputCount, handleDecrement, handleIncrement, handleInputChange } =
+    useMemberStep(setCustomNames, customNames);
 
   return (
     <div className={styles.infoStep}>
