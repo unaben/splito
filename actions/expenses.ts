@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { penceFromPounds } from "@/utils/balance";
+import { penceFromPounds } from "@/utils/balance/balance";
 import { getGroup, createExpense, deleteExpense } from "@/lib/db";
 import { uid, now } from "@/helper";
 import type { Expense } from "@/types";

@@ -1,5 +1,5 @@
 import { completeOnboardingAction } from "@/actions/onBoarding";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useTransition, useState } from "react";
 import { INFO_STEPS } from "../INFO_STEPS";
 

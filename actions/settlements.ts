@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getCurrentUserId } from "@/lib/mockAuth";
 import { processMockPayment } from "@/lib/mockStripe";
-import { penceFromPounds } from "@/utils/balance";
+import { penceFromPounds } from "@/utils/balance/balance";
 import { uid, now } from "@/helper";
 import { createSettlement, updateSettlementStatus } from "@/lib/db";
 

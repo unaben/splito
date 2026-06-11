@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AvatarStack } from "@/components/Avatar";
-import { formatPence, formatRelative } from "@/utils/balance";
+import { formatPence, formatRelative } from "@/utils/balance/balance";
 import {
   fetchDashboardData,
   getGroupBalances,

@@ -25,6 +25,7 @@ const Login = () => {
             placeholder="alice@example.com"
             required
             autoFocus
+            data-cy="login-email-input"
           />
         </div>
 
@@ -44,12 +45,18 @@ const Login = () => {
             className={styles.input}
             placeholder="Your password"
             required
+            data-cy="login-password-input"
           />
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
 
-        <button type="submit" disabled={isPending} className={styles.btn}>
+        <button
+          data-cy="login-sign-btn"
+          type="submit"
+          disabled={isPending}
+          className={styles.btn}
+        >
           {isPending ? "Signing in…" : "Sign in"}
         </button>
       </form>

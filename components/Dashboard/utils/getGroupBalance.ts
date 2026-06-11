@@ -1,4 +1,4 @@
-import { calculateBalances } from "@/utils/calculateBalances";
+import { calculateBalances } from "@/utils/calculateBalances/calculateBalances";
 import { getExpenses, getSettlements } from "@/lib/db";
 import type { Group } from "@/types";
 

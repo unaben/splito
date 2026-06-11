@@ -7,7 +7,7 @@ import {
   formatDate,
   CATEGORY_EMOJI,
   CATEGORY_LABELS,
-} from "@/utils/balance";
+} from "@/utils/balance/balance";
 import useExpenseList from "./hooks/useExpenseList";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import type { ExpenseListProps } from "./ExpenseList.types";

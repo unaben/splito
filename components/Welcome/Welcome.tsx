@@ -61,6 +61,7 @@ function Welcome({ userName, currentUserId }: WelcomeProps) {
             <button
               className={styles.btnBack}
               onClick={() => setStep((s) => s - 1)}
+              data-cy={`welcome-back-btn-${step}`}
             >
               ← Back
             </button>
@@ -69,6 +70,7 @@ function Welcome({ userName, currentUserId }: WelcomeProps) {
             <button
               className={styles.btnNext}
               onClick={() => setStep((s) => s + 1)}
+              data-cy={`welcome-next-btn-${step}`}
             >
               {step === 0 ? "Get started →" : "Next →"}
             </button>
@@ -77,6 +79,7 @@ function Welcome({ userName, currentUserId }: WelcomeProps) {
               className={styles.btnFinish}
               disabled={isPending}
               onClick={handleFinish}
+              data-cy='welcome-finish-btn'
             >
               {isPending ? "Setting up…" : "Go to dashboard →"}
             </button>

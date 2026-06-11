@@ -14,7 +14,11 @@ const SignoutButton = () => {
 
   return (
     <div>
-      <button onClick={handleSignOut} className={styles.signout}>
+      <button
+        data-cy="signout-btn"
+        onClick={handleSignOut}
+        className={styles.signout}
+      >
         Sign out
       </button>
     </div>
