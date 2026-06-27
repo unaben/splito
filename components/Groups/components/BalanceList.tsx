@@ -4,14 +4,14 @@ import type { Balance, SimplifiedDebt, User } from "@/types";
 import { getMember } from "../utils/getMember";
 import styles from "../Groups.module.css";
 
-type BalanceTabProps = {
+type BalanceListProps = {
   balances: Balance[];
   currentUserId: string;
   debts: SimplifiedDebt[];
   members: User[];
 };
 
-const BalanceTab = (props: BalanceTabProps) => {
+const BalanceList = (props: BalanceListProps) => {
   const { balances, currentUserId, debts, members } = props;
   return (
     <div className={styles.card}>
@@ -79,4 +79,4 @@ const BalanceTab = (props: BalanceTabProps) => {
   );
 };
 
-export default BalanceTab;
+export default BalanceList;

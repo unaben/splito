@@ -5,14 +5,14 @@ import type { Expense, Settlement, User } from "@/types";
 import type { ActivityItem } from "../Groups.types";
 import styles from "../Groups.module.css";
 
-type ActivityTabProps = {
+type ActivityListProps = {
   members: User[];
   currentUserId: string;
   expenses: Expense[];
   settlements: Settlement[];
 };
 
-const ActivityTab = (props: ActivityTabProps) => {
+const ActivityList = (props: ActivityListProps) => {
   const { currentUserId, members,expenses,settlements } = props;
 
   const activityFeed: ActivityItem[] = [
@@ -86,4 +86,4 @@ const ActivityTab = (props: ActivityTabProps) => {
   );
 };
 
-export default ActivityTab;
+export default ActivityList;

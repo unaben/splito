@@ -2,13 +2,13 @@ import Link from "next/link";
 import cn from "classnames";
 import { getGroup, getUsersByIds, getExpenses, getSettlements } from "@/lib/db";
 import { getCurrentUserId } from "@/lib/mockAuth";
-import { calculateBalances, simplifyDebts, formatPence } from "@/utils";
+import { calculateBalances, calculateDirectDebts, formatPence } from "@/utils";
 import { notFound } from "next/navigation";
 import { AvatarStack } from "../Avatar";
 import { AddExpenseModal } from "../Expenses/AddExpenseModal";
 import { ExpenseList } from "../Expenses/ExpenseList";
-import BalanceTab from "./components/BalanceTab";
-import ActivityTab from "./components/ActivityTab";
+import BalanceList from "./components/BalanceList";
+import ActivityList from "./components/ActivityList";
 import OwnerBalanceView from "./components/OwnerBalanceView";
 import type { GroupsProps } from "./Groups.types";
 import styles from "./Groups.module.css";
@@ -30,7 +30,7 @@ const Groups = async ({ id, searchParams }: GroupsProps) => {
   ]);
 
   const balances = calculateBalances(expenses, settlements, group.memberIds);
-  const debts = simplifyDebts(balances);
+  const debts = calculateDirectDebts(expenses, settlements, group.memberIds);
 
   const totalSpent = expenses.reduce((sum, e) => sum + e.amountPence, 0);
 
@@ -91,7 +91,7 @@ const Groups = async ({ id, searchParams }: GroupsProps) => {
       </div>
 
       {tab === "balances" && (
-        <BalanceTab
+        <BalanceList
           balances={balances}
           currentUserId={currentUserId}
           debts={debts}
@@ -109,7 +109,7 @@ const Groups = async ({ id, searchParams }: GroupsProps) => {
       )}
 
       {tab === "activity" && (
-        <ActivityTab
+        <ActivityList
           currentUserId={currentUserId}
           members={members}
           expenses={expenses}

@@ -17,45 +17,49 @@ type OwnerBalanceViewProps = {
 const OwnerBalanceView = (props: OwnerBalanceViewProps) => {
   const { balances, currentUserId, debts, expenses, group, members } = props;
 
-  const ownerBalance =
+  const userBalance =
     balances.find((b) => b.userId === currentUserId)?.amountPence ?? 0;
-  const myDebts = debts.filter((d) => d.fromUserId === currentUserId);
+  const userDebts = debts.filter((d) => d.fromUserId === currentUserId);
+  const userTotalDebt = userDebts.reduce(
+    (acc, debt) => acc + debt.amountPence,
+    0
+  );
 
   return (
     <>
-      {ownerBalance !== 0 && (
+      {userBalance !== 0 && (
         <div
           className={cn(
             styles.balanceBanner,
-            ownerBalance < 0 ? styles.balanceBannerNeg : styles.balanceBannerPos
+            userBalance < 0 ? styles.balanceBannerNeg : styles.balanceBannerPos
           )}
         >
           <div>
             <p
               className={cn(
                 styles.balanceBannerText,
-                ownerBalance < 0
+                userBalance < 0
                   ? styles.balanceBannerTextNeg
                   : styles.balanceBannerTextPos
               )}
             >
-              {ownerBalance < 0
-                ? `You owe ${formatPence(Math.abs(ownerBalance))}`
-                : `You are owed ${formatPence(ownerBalance)}`}
+              {userBalance < 0
+                ? `You owe ${formatPence(Math.abs(userTotalDebt))}`
+                : `You are owed ${formatPence(userBalance)}`}
             </p>
-            {myDebts.length > 0 && (
+            {userDebts.length > 0 && (
               <p className={styles.balanceBannerSub}>
                 to{" "}
-                {myDebts
+                {userDebts
                   .map((d) => getMember(d.toUserId, members)?.name)
                   .join(", ")}
               </p>
             )}
           </div>
-          {ownerBalance < 0 && myDebts.length > 0 && (
+          {userBalance < 0 && userDebts.length > 0 && (
             <SettleUpModal
               group={group}
-              debts={myDebts}
+              debts={userDebts}
               members={members}
               currentUserId={currentUserId}
             />
@@ -63,7 +67,7 @@ const OwnerBalanceView = (props: OwnerBalanceViewProps) => {
         </div>
       )}
 
-      {ownerBalance === 0 && expenses.length > 0 && (
+      {userBalance === 0 && expenses.length > 0 && (
         <div className={styles.settledBanner}>🎉 You are all settled up!</div>
       )}
     </>
