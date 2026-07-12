@@ -1,34 +1,32 @@
 .trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  background: var(--color-negative-bg);
-  color: var(--color-negative-fg);
-  font-size: 14px;
-  font-weight: 500;
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  border-radius: 8px;
+  background: var(--color-brand);
+  color: var(--color-white);
+  font-size: 0.9375rem;
+  font-weight: 600;
   border: none;
+  cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s;
+  transition: opacity 150ms;
 }
 
 .trigger:hover {
-  filter: brightness(0.96);
+  opacity: 0.88;
 }
 
-/* Overlay */
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: var(--space-4);
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  z-index: 50;
+  padding: 1rem;
 }
+
 @media (min-width: 640px) {
   .overlay {
     align-items: center;
@@ -37,329 +35,171 @@
 
 .modal {
   width: 100%;
-  max-width: 480px;
-  border-radius: var(--radius-xl);
+  max-width: 440px;
   background: var(--color-surface);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border-light);
 }
 
-.headerTitle {
-  font-size: 16px;
-  font-weight: 600;
+.title {
+  font-size: 1.125rem;
+  font-weight: 700;
   color: var(--color-text-primary);
+  margin: 0;
 }
 
-.closeBtn {
-  background: none;
+.close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
   border: none;
-  font-size: 22px;
-  line-height: 1;
-  color: var(--color-text-muted);
-  padding: 0 4px;
-  transition: color 0.15s;
-}
-.closeBtn:hover {
-  color: var(--color-text-primary);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms;
 }
 
-/* Select step */
-.body {
-  padding: var(--space-5);
+.close:hover {
+  background: var(--color-border);
+}
+
+.typeRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.typeBtn {
+  flex: 1;
+  height: 2.5rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms, background 150ms;
+}
+
+.typeBtnActive {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 6%, var(--bg));
+}
+
+.cardNote {
+  display: flex;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--color-brand) 6%, var(--color-bg));
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--color-brand) 20%, transparent);
+}
+
+.cardNoteIcon {
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.cardNoteContent {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 0.25rem;
 }
 
-.label {
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.cardNoteText {
+  font-size: 0.8125rem;
   color: var(--color-text-secondary);
-  margin-bottom: 6px;
-  display: block;
+  margin: 0;
 }
 
-/* Debt selector */
+.cardNoteTest {
+  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.cardNoteLink {
+  font-size: 0.75rem;
+  color: var(--color-brand);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.cardNoteLink:hover {
+  text-decoration: underline;
+}
+
 .debtList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 0.75rem;
 }
 
-.debtBtn {
+.debtRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+}
+
+.debtInfo {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  width: 100%;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  transition: border-color 0.15s, background 0.15s;
+  justify-content: space-between;
 }
 
-.debtBtn:hover {
-  border-color: #9ca3af;
-}
-
-.debtBtnActive {
-  border-color: var(--color-brand);
-  background: rgba(29, 158, 117, 0.04);
-}
-
-.debtName {
-  flex: 1;
-  text-align: left;
-  font-size: 14px;
-  font-weight: 500;
+.debtTo {
+  font-size: 0.9375rem;
   color: var(--color-text-primary);
+  font-weight: 500;
 }
 
 .debtAmount {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-negative-fg);
-}
-
-/* Payment summary */
-.summary {
-  padding: var(--space-4);
-  border-radius: var(--radius-lg);
-  background: var(--color-neutral-bg);
-  text-align: center;
-}
-
-.summaryLabel {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  margin-bottom: 4px;
-}
-
-.summaryAmount {
-  font-size: 32px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--color-text-primary);
 }
 
-.summaryTo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-  font-size: 13px;
-  color: var(--color-text-secondary);
-}
-
-.summaryToName {
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-/* Payment type */
-.paymentGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2);
-}
-
-.paymentTypeBtn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.paymentTypeBtn:hover {
-  border-color: #9ca3af;
-}
-
-.paymentTypeBtnActive {
-  border-color: var(--color-brand);
-  background: var(--color-brand-light);
-}
-
-.paymentTypeEmoji {
-  font-size: 24px;
-}
-
-.paymentTypeName {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.paymentTypeSub {
-  font-size: 11px;
-  color: var(--color-text-muted);
-}
-
-.demoNote {
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid #bfdbfe;
-  background: #eff6ff;
-  font-size: 12px;
-  color: #1d4ed8;
-}
-
-/* Actions */
-.actions {
-  display: flex;
-  gap: var(--space-3);
-}
-
-.btnSecondary {
-  flex: 1;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  transition: background 0.15s;
-}
-
-.btnSecondary:hover {
-  background: var(--color-neutral-bg);
-}
-
-.btnPrimary {
-  flex: 1;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  border: none;
+.payBtn {
+  height: 2.5rem;
+  border-radius: 8px;
   background: var(--color-brand);
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  transition: background 0.15s;
+  color: var(--color-white);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity 150ms;
+  width: 100%;
 }
-.btnPrimary:hover {
-  background: var(--color-brand-dark);
-}
-.btnPrimary:disabled {
-  opacity: 0.5;
+
+.payBtn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Paying step */
-.payingState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 56px var(--space-5);
-  gap: var(--space-4);
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-brand);
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.payingText {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.payingSubText {
-  font-size: 13px;
-  color: var(--color-text-muted);
-}
-
-/* Success step */
-.resultState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px var(--space-5) var(--space-5);
-  gap: var(--space-3);
-}
-
-.resultIcon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-}
-
-.resultIconSuccess {
-  background: var(--color-positive-bg);
-}
-
-.resultIconFail {
-  background: var(--color-negative-bg);
-}
-
-.resultTitle {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.resultSubText {
-  font-size: 14px;
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-
-.resultError {
-  font-size: 14px;
+.error {
+  font-size: 0.8125rem;
   color: var(--color-negative-fg);
-  text-align: center;
-}
-
-.resultActions {
-  display: flex;
-  gap: var(--space-3);
-  width: 100%;
-  margin-top: var(--space-2);
-}
-
-.btnPrimaryFull {
-  width: 100%;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--color-brand);
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  transition: background 0.15s;
-}
-
-.btnPrimaryFull:hover {
-  background: var(--color-brand-dark);
+  margin: 0;
 }
