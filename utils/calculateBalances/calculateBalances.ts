@@ -1,64 +1,62 @@
-import { Expense, Settlement, Balance } from "@/types";
+import type { Expense, Settlement, Balance } from "@/types";
+
 type BalanceRecord = Record<string, number>;
 
+/**
+ * Calculate the net balance for every member in a group.
+ *
+ * Positive value  → this person is owed money by others
+ * Negative value  → this person owes money to others
+ * Zero            → fully settled up
+ */
 export function calculateBalances(
   expenses: Expense[],
   settlements: Settlement[],
   memberIds: string[]
 ): Balance[] {
-  const initialState: BalanceRecord = Object.fromEntries(
+  const initial: BalanceRecord = Object.fromEntries(
     memberIds.map((id) => [id, 0])
   );
 
-  // Process each expense ─────────────────────────────────────────
-  const afterExpenses = expenses.reduce<BalanceRecord>((balances, expense) => {
-    // 1. Identify who hasn't paid yet
-    const filteredUnsettledSplits = expense.splits.filter((s) => !s.isSettled);
-
-    // 2. Calculate what the payer is owed by others
-    const totalToCreditPayer = filteredUnsettledSplits
+  const afterExpenses = expenses.reduce<BalanceRecord>((acc, expense) => {
+    const unsettledSplits = expense.splits.filter((s) => !s.isSettled);
+    const othersUnsettledShare = unsettledSplits
       .filter((s) => s.userId !== expense.paidBy)
       .reduce((sum, s) => sum + s.amountPence, 0);
 
-    const balancesWithPayerCredited =
-      expense.paidBy in balances && totalToCreditPayer > 0
+    const accWithPayer =
+      expense.paidBy in acc && othersUnsettledShare > 0
         ? {
-            ...balances,
-            [expense.paidBy]: balances[expense.paidBy] + totalToCreditPayer,
+            ...acc,
+            [expense.paidBy]: acc[expense.paidBy] + othersUnsettledShare,
           }
-        : balances;
+        : acc;
 
-    // 3. Subtract shares from the people who owe
-    const finalBalancesForThisExpense = filteredUnsettledSplits
+    return unsettledSplits
       .filter((s) => s.userId !== expense.paidBy)
-      .reduce<BalanceRecord>((acc, split) => {
-        if (!(split.userId in acc)) return acc;
+      .reduce<BalanceRecord>((inner, split) => {
+        if (!(split.userId in inner)) return inner;
         return {
-          ...acc,
-          [split.userId]: acc[split.userId] - split.amountPence,
+          ...inner,
+          [split.userId]: inner[split.userId] - split.amountPence,
         };
-      }, balancesWithPayerCredited);
-    return finalBalancesForThisExpense;
-  }, initialState);
+      }, accWithPayer);
+  }, initial);
 
-  // ── Step 3: Apply completed settlements ──────────────────────────────────
   const afterSettlements = settlements
     .filter((s) => s.status === "completed")
-    .reduce<BalanceRecord>((balances, settlement) => {
-      const payerBalance = balances[settlement.payerId];
-      const payeeBalance = balances[settlement.payeeId];
-
-      const newBalances = {
-        ...balances,
-        ...(payerBalance !== undefined
-          ? { [settlement.payerId]: payerBalance + settlement.amountPence }
+    .reduce<BalanceRecord>((acc, s) => {
+      const payerBal = acc[s.payerId];
+      const payeeBal = acc[s.payeeId];
+      return {
+        ...acc,
+        ...(payerBal !== undefined
+          ? { [s.payerId]: payerBal + s.amountPence }
           : {}),
-        ...(payeeBalance !== undefined
-          ? { [settlement.payeeId]: payeeBalance - settlement.amountPence }
+        ...(payeeBal !== undefined
+          ? { [s.payeeId]: payeeBal - s.amountPence }
           : {}),
       };
-
-      return newBalances;
     }, afterExpenses);
 
   return Object.entries(afterSettlements).map(([userId, amountPence]) => ({

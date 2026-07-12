@@ -4,7 +4,7 @@ import { getToken } from "next-auth/jwt";
 
 const PUBLIC_PATHS = ["/register", "/login", "/forgot-password"];
 const STATIC_PATHS = ["/_next", "/favicon"];
-const PUBLIC_API_PATHS = ["/api/auth"];
+const PUBLIC_API_PATHS = ["/api/auth", "/api/webhooks"];
 const PROTECTED_API_PREFIX = "/api/";
 
 export async function proxy(req: NextRequest) {

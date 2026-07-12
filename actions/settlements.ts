@@ -3,10 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getCurrentUserId } from "@/lib/mockAuth";
-import { processMockPayment } from "@/lib/mockStripe";
 import { penceFromPounds } from "@/utils/balance/balance";
 import { uid, now } from "@/helper";
 import { createSettlement, updateSettlementStatus } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
+import { baseUrl } from "@/services/baseUrl";
 
 const SettleUpSchema = z.object({
   groupId: z.string().min(1),
@@ -49,27 +50,65 @@ export async function settleUpAction(formData: FormData) {
     return { success: true, type: "cash" };
   }
 
-  // Card payment — run through mock Stripe
   const settlement = await createSettlement({
     id: `settle-${uid()}`,
-    createdAt: now(),
     groupId: parsed.data.groupId,
     payerId,
     payeeId: parsed.data.payeeId,
     amountPence,
     status: "pending",
+    createdAt: now(),
   });
 
-  const result = await processMockPayment(amountPence);
-
-  if (!result.success) {
+  if (!baseUrl) {
     await updateSettlementStatus(settlement.id, "failed");
-    return { error: result.error ?? "Payment failed. Please try again." };
+    return { error: "App URL is not configured." };
   }
 
-  await updateSettlementStatus(settlement.id, "completed");
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      currency: "gbp",
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "gbp",
+            unit_amount: amountPence,
+            product_data: {
+              name: "Splito — settle up",
+              description: `Payment of £${parsed.data.amount}`,
+            },
+          },
+        },
+      ],
+      metadata: {
+        settlementId: settlement.id,
+        groupId: parsed.data.groupId,
+        payerId,
+        payeeId: parsed.data.payeeId,
+      },
+      success_url: `${baseUrl()}/settle/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl()}/settle/cancel?group_id=${
+        parsed.data.groupId
+      }&settlement_id=${settlement.id}`,
+    });
+  } catch (err) {
+    console.error("[settleUpAction] Stripe session creation failed:", err);
+    await updateSettlementStatus(settlement.id, "failed");
+    return { error: "Could not create payment session. Please try again." };
+  }
 
-  revalidatePath(`/groups/${parsed.data.groupId}`);
-  revalidatePath("/dashboard");
-  return { success: true, type: "card", paymentId: result.paymentId };
+  if (!session.url) {
+    await updateSettlementStatus(settlement.id, "failed");
+    return { error: "Payment session had no URL. Please try again." };
+  }
+
+  return {
+    success: true,
+    type: "card",
+    checkoutUrl: session.url,
+    settlementId: settlement.id,
+  };
 }
